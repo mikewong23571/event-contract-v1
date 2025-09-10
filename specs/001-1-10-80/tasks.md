@@ -56,11 +56,11 @@
 - [x] **T033** [P] PerformanceMetrics model in backend/src/models/performance_metrics.py
 
 ## Phase 3.4: Core Libraries (Library-First Architecture)
-- [ ] **T034** [P] Signal generation library with CLI in backend/src/lib/signal_generation/
-- [ ] **T035** [P] Risk management library with CLI in backend/src/lib/risk_management/
-- [ ] **T036** [P] Data ingestion library with CLI in backend/src/lib/data_ingestion/
-- [ ] **T037** [P] Backtesting engine library with CLI in backtesting/src/lib/backtesting_engine/
-- [ ] **T038** [P] Notification library with CLI in notifications/src/lib/notification_manager/
+- [x] **T034** [P] Signal generation library with CLI in backend/src/lib/signal_generation/
+- [x] **T035** [P] Risk management library with CLI in backend/src/lib/risk_management/
+- [x] **T036** [P] Data ingestion library with CLI in backend/src/lib/data_ingestion/
+- [x] **T037** [P] Backtesting engine library with CLI in backtesting/src/lib/backtesting_engine/
+- [x] **T038** [P] Notification library with CLI in notifications/src/lib/notification_manager/
 
 ## Phase 3.5: Services Layer
 - [ ] **T039** [P] SignalService class in backend/src/services/signal_service.py

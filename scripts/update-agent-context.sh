@@ -26,11 +26,11 @@ fi
 echo "=== Updating agent context files for feature $CURRENT_BRANCH ==="
 
 # Extract tech from new plan
-NEW_LANG=$(grep "^**Language/Version**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Language\/Version**: //' | grep -v "NEEDS CLARIFICATION" || echo "")
-NEW_FRAMEWORK=$(grep "^**Primary Dependencies**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Primary Dependencies**: //' | grep -v "NEEDS CLARIFICATION" || echo "")
-NEW_TESTING=$(grep "^**Testing**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Testing**: //' | grep -v "NEEDS CLARIFICATION" || echo "")
-NEW_DB=$(grep "^**Storage**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Storage**: //' | grep -v "N/A" | grep -v "NEEDS CLARIFICATION" || echo "")
-NEW_PROJECT_TYPE=$(grep "^**Project Type**: " "$NEW_PLAN" 2>/dev/null | head -1 | sed 's/^**Project Type**: //' || echo "")
+NEW_LANG=$(awk '/\*\*Language\/Version\*\*:/ { gsub(/\*\*Language\/Version\*\*: /, ""); print; exit }' "$NEW_PLAN" 2>/dev/null | grep -v "NEEDS CLARIFICATION" || echo "")
+NEW_FRAMEWORK=$(awk '/\*\*Primary Dependencies\*\*:/ { gsub(/\*\*Primary Dependencies\*\*: /, ""); print; exit }' "$NEW_PLAN" 2>/dev/null | grep -v "NEEDS CLARIFICATION" || echo "")
+NEW_TESTING=$(awk '/\*\*Testing\*\*:/ { gsub(/\*\*Testing\*\*: /, ""); print; exit }' "$NEW_PLAN" 2>/dev/null | grep -v "NEEDS CLARIFICATION" || echo "")
+NEW_DB=$(awk '/\*\*Storage\*\*:/ { gsub(/\*\*Storage\*\*: /, ""); print; exit }' "$NEW_PLAN" 2>/dev/null | grep -v "N/A" | grep -v "NEEDS CLARIFICATION" || echo "")
+NEW_PROJECT_TYPE=$(awk '/\*\*Project Type\*\*:/ { gsub(/\*\*Project Type\*\*: /, ""); print; exit }' "$NEW_PLAN" 2>/dev/null || echo "")
 
 # Function to update a single agent context file
 update_agent_file() {
@@ -57,7 +57,14 @@ update_agent_file() {
         # Replace placeholders
         sed -i.bak "s/\[PROJECT NAME\]/$(basename $REPO_ROOT)/" "$temp_file"
         sed -i.bak "s/\[DATE\]/$(date +%Y-%m-%d)/" "$temp_file"
-        sed -i.bak "s/\[EXTRACTED FROM ALL PLAN.MD FILES\]/- $NEW_LANG + $NEW_FRAMEWORK ($CURRENT_BRANCH)/" "$temp_file"
+        
+        # Replace the complex technology line using a more robust approach
+        cat "$temp_file" | sed "s|\[EXTRACTED FROM ALL PLAN.MD FILES\]|PLACEHOLDER_TECH|" > "$temp_file.tmp"
+        echo "- $NEW_LANG + $NEW_FRAMEWORK ($CURRENT_BRANCH)" > /tmp/tech_line.txt
+        sed -i.bak "/PLACEHOLDER_TECH/r /tmp/tech_line.txt" "$temp_file.tmp"
+        sed -i.bak "/PLACEHOLDER_TECH/d" "$temp_file.tmp"
+        mv "$temp_file.tmp" "$temp_file"
+        rm -f /tmp/tech_line.txt
         
         # Add project structure based on type
         if [[ "$NEW_PROJECT_TYPE" == *"web"* ]]; then
@@ -66,23 +73,21 @@ update_agent_file() {
             sed -i.bak "s|\[ACTUAL STRUCTURE FROM PLANS\]|src/\ntests/|" "$temp_file"
         fi
         
-        # Add minimal commands
+        # Add minimal commands - use a more robust replacement
         if [[ "$NEW_LANG" == *"Python"* ]]; then
-            COMMANDS="cd src && pytest && ruff check ."
+            COMMANDS="uv run pytest && uv run ruff check ."
         elif [[ "$NEW_LANG" == *"Rust"* ]]; then
             COMMANDS="cargo test && cargo clippy"
         elif [[ "$NEW_LANG" == *"JavaScript"* ]] || [[ "$NEW_LANG" == *"TypeScript"* ]]; then
             COMMANDS="npm test && npm run lint"
         else
-            COMMANDS="# Add commands for $NEW_LANG"
+            COMMANDS="# Add commands for this project"
         fi
-        sed -i.bak "s|\[ONLY COMMANDS FOR ACTIVE TECHNOLOGIES\]|$COMMANDS|" "$temp_file"
         
-        # Add code style
-        sed -i.bak "s|\[LANGUAGE-SPECIFIC, ONLY FOR LANGUAGES IN USE\]|$NEW_LANG: Follow standard conventions|" "$temp_file"
-        
-        # Add recent changes
-        sed -i.bak "s|\[LAST 3 FEATURES AND WHAT THEY ADDED\]|- $CURRENT_BRANCH: Added $NEW_LANG + $NEW_FRAMEWORK|" "$temp_file"
+        # Replace placeholders more safely
+        sed -i.bak "s|\[ONLY COMMANDS FOR ACTIVE TECHNOLOGIES\]|$COMMANDS|g" "$temp_file"
+        sed -i.bak "s|\[LANGUAGE-SPECIFIC, ONLY FOR LANGUAGES IN USE\]|$NEW_LANG: Follow standard conventions|g" "$temp_file"
+        sed -i.bak "s|\[LAST 3 FEATURES AND WHAT THEY ADDED\]|- $CURRENT_BRANCH: Added $NEW_LANG + $NEW_FRAMEWORK|g" "$temp_file"
         
         rm "$temp_file.bak"
     else
@@ -131,7 +136,7 @@ if "$NEW_PROJECT_TYPE" == "web" and "frontend/" not in content:
                         f'\\1{updated_struct}\\2', content, flags=re.DOTALL)
 
 # Add new commands if language is new
-if "$NEW_LANG" and f"# {NEW_LANG}" not in content:
+if "$NEW_LANG" and "$NEW_LANG" not in content:
     commands_section = re.search(r'## Commands\n\`\`\`bash\n(.*?)\n\`\`\`', content, re.DOTALL)
     if not commands_section:
         commands_section = re.search(r'## Commands\n(.*?)\n\n', content, re.DOTALL)
@@ -145,7 +150,7 @@ if "$NEW_LANG" and f"# {NEW_LANG}" not in content:
         elif "JavaScript" in "$NEW_LANG" or "TypeScript" in "$NEW_LANG":
             new_commands += "\nnpm test && npm run lint"
         
-        if "```bash" in content:
+        if "\`\`\`bash" in content:
             content = re.sub(r'(## Commands\n\`\`\`bash\n).*?(\n\`\`\`)', 
                             f'\\1{new_commands}\\2', content, flags=re.DOTALL)
         else:

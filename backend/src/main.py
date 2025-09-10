@@ -5,7 +5,6 @@ FastAPI application entry point for the trading system backend.
 """
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from .api.signals import router as signals_router
 from .api.market_data import router as market_data_router
 from .api.risk import router as risk_router
@@ -14,6 +13,11 @@ from .api.backtests import router as backtests_router
 from .websocket.signals_ws import router as signals_ws_router
 from .websocket.market_data_ws import router as market_data_ws_router
 from .websocket.alerts_ws import router as alerts_ws_router
+from .config.settings import get_settings
+from .middleware.cors import setup_cors
+from .middleware.logging import RequestLoggingMiddleware
+from .middleware.error_handler import UnhandledErrorMiddleware, setup_exception_handlers
+from .middleware.auth import AuthenticationMiddleware
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -24,14 +28,15 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend development server
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Load settings
+settings = get_settings()
+
+# Middleware: logging, auth (non-enforcing), CORS, and error handling
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(AuthenticationMiddleware)
+setup_cors(app)
+app.add_middleware(UnhandledErrorMiddleware)
+setup_exception_handlers(app)
 
 
 @app.get("/")

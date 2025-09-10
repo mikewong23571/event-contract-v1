@@ -115,18 +115,18 @@
 - [x] **T076** Notification dispatcher in notifications/src/dispatchers/notification_dispatcher.py
 
 ## Phase 3.12: Database Integration
-- [ ] **T077** PostgreSQL connection setup in backend/src/database/postgres.py
-- [ ] **T078** InfluxDB connection setup in backend/src/database/influxdb.py
-- [ ] **T079** Redis connection setup in backend/src/database/redis.py
-- [ ] **T080** Database migration scripts in backend/migrations/
-- [ ] **T081** Database seeding for development data in backend/seeds/
+- [x] **T077** PostgreSQL connection setup in backend/src/database/postgres.py
+- [x] **T078** InfluxDB connection setup in backend/src/database/influxdb.py
+- [x] **T079** Redis connection setup in backend/src/database/redis.py
+- [x] **T080** Database migration scripts in backend/migrations/
+- [x] **T081** Database seeding for development data in backend/seeds/
 
 ## Phase 3.13: Configuration & Middleware
-- [ ] **T082** [P] Application configuration management in backend/src/config/settings.py
-- [ ] **T083** [P] Authentication middleware in backend/src/middleware/auth.py
-- [ ] **T084** [P] Request logging middleware in backend/src/middleware/logging.py
-- [ ] **T085** [P] CORS configuration in backend/src/middleware/cors.py
-- [ ] **T086** [P] Error handling middleware in backend/src/middleware/error_handler.py
+- [x] **T082** [P] Application configuration management in backend/src/config/settings.py
+- [x] **T083** [P] Authentication middleware in backend/src/middleware/auth.py
+- [x] **T084** [P] Request logging middleware in backend/src/middleware/logging.py
+- [x] **T085** [P] CORS configuration in backend/src/middleware/cors.py
+- [x] **T086** [P] Error handling middleware in backend/src/middleware/error_handler.py
 
 ## Phase 3.14: CLI Tools (Constitutional Requirement)
 - [ ] **T087** [P] Signal generation CLI in backend/src/cli/signal_cli.py

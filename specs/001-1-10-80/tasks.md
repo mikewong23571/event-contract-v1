@@ -112,7 +112,7 @@
 - [x] **T073** [P] Telegram notification client in notifications/src/clients/telegram_client.py
 - [x] **T074** [P] Feishu notification client in notifications/src/clients/feishu_client.py
 - [x] **T075** [P] Notification template engine in notifications/src/templates/template_engine.py
- - [x] **T076** Notification dispatcher in notifications/src/dispatchers/notification_dispatcher.py
+- [x] **T076** Notification dispatcher in notifications/src/dispatchers/notification_dispatcher.py
 
 ## Phase 3.12: Database Integration
 - [ ] **T077** PostgreSQL connection setup in backend/src/database/postgres.py

@@ -34,9 +34,9 @@
 - [ ] **T017** [P] Contract test GET /api/v1/backtests/{id} in backend/tests/contract/test_backtests_get.py
 
 ### WebSocket Contract Tests
-- [ ] **T018** [P] Contract test WebSocket /ws/signals connection in backend/tests/contract/test_ws_signals.py
-- [ ] **T019** [P] Contract test WebSocket /ws/market-data subscription in backend/tests/contract/test_ws_market_data.py
-- [ ] **T020** [P] Contract test WebSocket /ws/alerts channel in backend/tests/contract/test_ws_alerts.py
+- [x] **T018** [P] Contract test WebSocket /ws/signals connection in backend/tests/contract/test_ws_signals.py
+- [x] **T019** [P] Contract test WebSocket /ws/market-data subscription in backend/tests/contract/test_ws_market_data.py
+- [x] **T020** [P] Contract test WebSocket /ws/alerts channel in backend/tests/contract/test_ws_alerts.py
 
 ### Integration Tests
 - [ ] **T021** [P] Integration test complete signal generation workflow in backend/tests/integration/test_signal_workflow.py

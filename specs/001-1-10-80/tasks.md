@@ -64,11 +64,11 @@
 
 ## Phase 3.5: Services Layer
 - [x] **T039** [P] SignalService class in backend/src/services/signal_service.py
-- [s] **T040** [P] MarketDataService class in backend/src/services/market_data_service.py
-- [ ] **T041** [P] RiskManagementService class in backend/src/services/risk_service.py
-- [ ] **T042** [P] BacktestService class in backend/src/services/backtest_service.py
+- [x] **T040** [P] MarketDataService class in backend/src/services/market_data_service.py
+- [x] **T041** [P] RiskManagementService class in backend/src/services/risk_service.py
+- [x] **T042** [P] BacktestService class in backend/src/services/backtest_service.py
 - [x] **T043** EventContractService class in backend/src/services/contract_service.py
-- [ ] **T044** NotificationService class in backend/src/services/notification_service.py
+- [x] **T044** NotificationService class in backend/src/services/notification_service.py
 
 ## Phase 3.6: API Endpoints Implementation
 - [ ] **T045** GET /api/v1/signals endpoint in backend/src/api/signals.py

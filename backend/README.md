@@ -14,28 +14,34 @@ FastAPI-based backend service for the Event Contract Trading System.
 ## Installation
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies using uv
+uv sync
 
-# Development dependencies
-pip install -e ".[dev]"
+# Install with development dependencies
+uv sync --extra dev
+
+# Alternative: Install in editable mode
+uv pip install -e ".[dev]"
 ```
 
 ## Development
 
 ```bash
 # Run the development server
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
 # Run tests
-pytest
+uv run pytest
 
 # Format code
-black .
-isort .
+uv run black .
+uv run isort .
 
 # Lint code
-flake8 .
+uv run flake8 .
+
+# Type checking
+uv run mypy src/
 ```
 
 ## Project Structure

@@ -74,7 +74,7 @@
 - [x] **T045** GET /api/v1/signals endpoint in backend/src/api/signals.py
 - [x] **T046** POST /api/v1/signals/generate endpoint in backend/src/api/signals.py
 - [x] **T047** GET /api/v1/market-data endpoint in backend/src/api/market_data.py
-- [ ] **T048** POST /api/v1/market-data/stream endpoint in backend/src/api/market_data.py
+- [x] **T048** POST /api/v1/market-data/stream endpoint in backend/src/api/market_data.py
 - [ ] **T049** [P] GET /api/v1/risk-parameters endpoint in backend/src/api/risk.py
 - [ ] **T050** [P] PUT /api/v1/risk-parameters endpoint in backend/src/api/risk.py
 - [ ] **T051** [P] POST /api/v1/backtests endpoint in backend/src/api/backtests.py

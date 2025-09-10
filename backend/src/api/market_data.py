@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from ..lib.data_ingestion.data_ingester import DataIngester
 from ..services.market_data_service import MarketDataService
@@ -80,3 +80,64 @@ async def get_market_data(
         "data": data,
     }
 
+
+@router.post("/market-data/stream", status_code=201)
+async def post_market_data_stream(request: Request) -> Dict[str, Any]:
+    """
+    POST /api/v1/market-data/stream
+
+    Initiate a market data streaming session for a given symbol.
+    Contract expectations (from tests):
+    - JSON body with required field: symbol (str)
+    - Optional interval: one of {1m, 5m, 15m, 1h}
+    - Optional client_id: str (ignored by backend for now)
+    - Returns 201 with JSON containing: stream_id, symbol, status
+    - Returns 400 when symbol is missing/invalid in body
+    """
+
+    # Enforce JSON content type explicitly to map bad requests to 400
+    content_type = request.headers.get("content-type", "").lower()
+    if "application/json" not in content_type:
+        raise HTTPException(status_code=400, detail="content-type must be application/json")
+
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="invalid request body")
+
+    if not isinstance(body, dict):
+        raise HTTPException(status_code=400, detail="request body must be a JSON object")
+
+    symbol = body.get("symbol")
+    if not isinstance(symbol, str) or not symbol.strip():
+        # Contract: symbol is required → 400
+        raise HTTPException(status_code=400, detail="symbol is required")
+
+    interval = body.get("interval", "1m")
+    allowed_intervals = {"1m", "5m", "15m", "1h"}
+    if interval not in allowed_intervals:
+        # Keep consistent with other endpoints returning 400 for invalid values
+        raise HTTPException(status_code=400, detail="invalid interval")
+
+    # client_id is accepted but not required/used by backend logic yet
+    _client_id = body.get("client_id")
+
+    # Validate symbol is supported (return 404 if unknown)
+    service = MarketDataService()
+    if symbol.strip() not in service.get_supported_symbols():
+        raise HTTPException(status_code=404, detail="symbol not found")
+
+    # Start the (simulated) real-time stream; provide a no-op callback
+    def _noop_callback(_md: MarketData) -> None:
+        return None
+
+    stream_id = service.start_real_time_stream([symbol.strip()], _noop_callback)
+    if not stream_id:
+        # If streaming could not be started, surface as server error
+        raise HTTPException(status_code=500, detail="failed to start market data stream")
+
+    return {
+        "stream_id": stream_id,
+        "symbol": symbol.strip(),
+        "status": "RUNNING",
+    }

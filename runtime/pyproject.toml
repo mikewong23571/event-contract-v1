@@ -21,7 +21,7 @@ dependencies = [
     "aiohttp==3.9.1",
     "asyncio-mqtt==0.16.1",
     "pandas==2.1.4",
-    "numpy==1.25.2",
+    "numpy>=1.26.0,<2.0",
     "python-binance==1.0.19",
     "ccxt==4.1.64",
     "pydantic==2.5.2",

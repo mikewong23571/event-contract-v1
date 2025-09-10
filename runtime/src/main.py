@@ -38,41 +38,41 @@ logger = structlog.get_logger(__name__)
 
 class RuntimeEngine:
     """Main runtime engine for real-time trading signal detection."""
-    
+
     def __init__(self) -> None:
         self.settings = get_settings()
         self.running = False
-        
+
     async def start(self) -> None:
         """Start the runtime engine."""
         logger.info("Starting Event Contract Runtime Engine", version="0.1.0")
         self.running = True
-        
+
         # Initialize components
         await self._initialize_components()
-        
+
         # Start main processing loop
         await self._run()
-        
+
     async def stop(self) -> None:
         """Stop the runtime engine gracefully."""
         logger.info("Stopping Event Contract Runtime Engine")
         self.running = False
-        
+
     async def _initialize_components(self) -> None:
         """Initialize runtime engine components."""
         logger.info("Initializing runtime components")
         # Component initialization will be implemented in later tasks
-        
+
     async def _run(self) -> None:
         """Main processing loop."""
         logger.info("Runtime engine processing loop started")
-        
+
         try:
             while self.running:
                 # Main processing logic will be implemented in later tasks
                 await asyncio.sleep(1.0)
-                
+
         except asyncio.CancelledError:
             logger.info("Runtime engine processing cancelled")
         except Exception as e:
@@ -82,11 +82,11 @@ class RuntimeEngine:
 
 def setup_signal_handlers(engine: RuntimeEngine) -> None:
     """Set up signal handlers for graceful shutdown."""
-    
+
     def signal_handler(signum: int, frame) -> None:
         logger.info("Received shutdown signal", signal=signum)
         asyncio.create_task(engine.stop())
-        
+
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
@@ -95,7 +95,7 @@ async def main() -> NoReturn:
     """Main entry point."""
     engine = RuntimeEngine()
     setup_signal_handlers(engine)
-    
+
     try:
         await engine.start()
     except KeyboardInterrupt:
@@ -105,7 +105,7 @@ async def main() -> NoReturn:
         sys.exit(1)
     finally:
         await engine.stop()
-        
+
     sys.exit(0)
 
 

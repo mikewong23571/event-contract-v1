@@ -10,28 +10,28 @@
 - Paths assume web structure: `backend/`, `frontend/`, `backtesting/`, `runtime/`, `notifications/`
 
 ## Phase 3.1: Project Setup
-- [ ] **T001** Create project structure with 4 components (backend/, frontend/, backtesting/, runtime/, notifications/)
-- [ ] **T002** Initialize Python backend project with FastAPI, pytest, and dependencies in backend/
-- [ ] **T003** [P] Initialize React frontend project with TailwindCSS and dependencies in frontend/
-- [ ] **T004** [P] Initialize backtesting engine project with pandas/numpy dependencies in backtesting/
-- [ ] **T005** [P] Initialize runtime engine project with WebSocket dependencies in runtime/
-- [ ] **T006** [P] Initialize notifications service project with API client dependencies in notifications/
-- [ ] **T007** [P] Configure Docker Compose for PostgreSQL, InfluxDB, Redis services
-- [ ] **T008** [P] Configure linting and formatting tools (black, flake8, eslint, prettier)
-- [ ] **T009** [P] Set up environment configuration files (.env, docker-compose.yml)
+- [x] **T001** Create project structure with 4 components (backend/, frontend/, backtesting/, runtime/, notifications/)
+- [x] **T002** Initialize Python backend project with FastAPI, pytest, and dependencies in backend/
+- [x] **T003** [P] Initialize React frontend project with TailwindCSS and dependencies in frontend/
+- [x] **T004** [P] Initialize backtesting engine project with pandas/numpy dependencies in backtesting/
+- [x] **T005** [P] Initialize runtime engine project with WebSocket dependencies in runtime/
+- [x] **T006** [P] Initialize notifications service project with API client dependencies in notifications/
+- [x] **T007** [P] Configure Docker Compose for PostgreSQL, InfluxDB, Redis services
+- [x] **T008** [P] Configure linting and formatting tools (black, flake8, eslint, prettier)
+- [x] **T009** [P] Set up environment configuration files (.env, docker-compose.yml)
 
 ## Phase 3.2: Contract Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
 ### REST API Contract Tests
-- [ ] **T010** [P] Contract test GET /api/v1/signals in backend/tests/contract/test_signals_get.py
-- [ ] **T011** [P] Contract test POST /api/v1/signals/generate in backend/tests/contract/test_signals_post.py
-- [ ] **T012** [P] Contract test GET /api/v1/market-data in backend/tests/contract/test_market_data_get.py
-- [ ] **T013** [P] Contract test POST /api/v1/market-data/stream in backend/tests/contract/test_market_data_stream.py
-- [ ] **T014** [P] Contract test GET /api/v1/risk-parameters in backend/tests/contract/test_risk_get.py
-- [ ] **T015** [P] Contract test PUT /api/v1/risk-parameters in backend/tests/contract/test_risk_put.py
-- [ ] **T016** [P] Contract test POST /api/v1/backtests in backend/tests/contract/test_backtests_post.py
-- [ ] **T017** [P] Contract test GET /api/v1/backtests/{id} in backend/tests/contract/test_backtests_get.py
+- [x] **T010** [P] Contract test GET /api/v1/signals in backend/tests/contract/test_signals_get.py
+- [x] **T011** [P] Contract test POST /api/v1/signals/generate in backend/tests/contract/test_signals_post.py
+- [x] **T012** [P] Contract test GET /api/v1/market-data in backend/tests/contract/test_market_data_get.py
+- [x] **T013** [P] Contract test POST /api/v1/market-data/stream in backend/tests/contract/test_market_data_stream.py
+- [x] **T014** [P] Contract test GET /api/v1/risk-parameters in backend/tests/contract/test_risk_get.py
+- [x] **T015** [P] Contract test PUT /api/v1/risk-parameters in backend/tests/contract/test_risk_put.py
+- [x] **T016** [P] Contract test POST /api/v1/backtests in backend/tests/contract/test_backtests_post.py
+- [x] **T017** [P] Contract test GET /api/v1/backtests/{id} in backend/tests/contract/test_backtests_get.py
 
 ### WebSocket Contract Tests
 - [x] **T018** [P] Contract test WebSocket /ws/signals connection in backend/tests/contract/test_ws_signals.py
@@ -47,13 +47,13 @@
 - [x] **T026** [P] Integration test notification dispatch system in notifications/tests/integration/test_notification_flow.py
 
 ## Phase 3.3: Core Data Models (ONLY after tests are failing)
-- [ ] **T027** [P] TradingSignal model in backend/src/models/trading_signal.py
-- [ ] **T028** [P] MarketData model in backend/src/models/market_data.py
-- [ ] **T029** [P] EventContract model in backend/src/models/event_contract.py
-- [ ] **T030** [P] RiskParameters model in backend/src/models/risk_parameters.py
-- [ ] **T031** [P] BacktestResult model in backtesting/src/models/backtest_result.py
-- [ ] **T032** [P] BacktestTrade model in backtesting/src/models/backtest_trade.py
-- [ ] **T033** [P] PerformanceMetrics model in backend/src/models/performance_metrics.py
+- [x] **T027** [P] TradingSignal model in backend/src/models/trading_signal.py
+- [x] **T028** [P] MarketData model in backend/src/models/market_data.py
+- [x] **T029** [P] EventContract model in backend/src/models/event_contract.py
+- [x] **T030** [P] RiskParameters model in backend/src/models/risk_parameters.py
+- [x] **T031** [P] BacktestResult model in backtesting/src/models/backtest_result.py
+- [x] **T032** [P] BacktestTrade model in backtesting/src/models/backtest_trade.py
+- [x] **T033** [P] PerformanceMetrics model in backend/src/models/performance_metrics.py
 
 ## Phase 3.4: Core Libraries (Library-First Architecture)
 - [ ] **T034** [P] Signal generation library with CLI in backend/src/lib/signal_generation/

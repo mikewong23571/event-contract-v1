@@ -1,0 +1,40 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# This file is automatically loaded by docker-compose for local development
+
+services:
+  postgres:
+    environment:
+      # Development-specific PostgreSQL settings
+      POSTGRES_DB: event_contract_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      # Add development SQL scripts
+      - ./backend/seeds:/docker-entrypoint-initdb.d/seeds:ro
+    command: postgres -c log_statement=all -c log_destination=stderr
+
+  influxdb:
+    environment:
+      # Development-specific InfluxDB settings
+      DOCKER_INFLUXDB_INIT_USERNAME: dev_admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: dev_password
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: dev_token_for_development_only
+      # Enable debug logging
+      INFLUXD_LOG_LEVEL: debug
+
+  redis:
+    # Development-specific Redis configuration
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --loglevel verbose
+
+  # Enable management tools in development
+  redis-commander:
+    profiles:
+      - dev-tools
+      - default
+
+  pgadmin:
+    profiles:
+      - dev-tools
+      - default

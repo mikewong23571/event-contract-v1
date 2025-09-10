@@ -39,12 +39,12 @@
 - [x] **T020** [P] Contract test WebSocket /ws/alerts channel in backend/tests/contract/test_ws_alerts.py
 
 ### Integration Tests
-- [ ] **T021** [P] Integration test complete signal generation workflow in backend/tests/integration/test_signal_workflow.py
-- [ ] **T022** [P] Integration test market data ingestion pipeline in backend/tests/integration/test_data_pipeline.py
-- [ ] **T023** [P] Integration test backtesting execution flow in backtesting/tests/integration/test_backtest_flow.py
-- [ ] **T024** [P] Integration test real-time trading signal detection in runtime/tests/integration/test_realtime_signals.py
-- [ ] **T025** [P] Integration test risk parameter enforcement in backend/tests/integration/test_risk_enforcement.py
-- [ ] **T026** [P] Integration test notification dispatch system in notifications/tests/integration/test_notification_flow.py
+- [x] **T021** [P] Integration test complete signal generation workflow in backend/tests/integration/test_signal_workflow.py
+- [x] **T022** [P] Integration test market data ingestion pipeline in backend/tests/integration/test_data_pipeline.py
+- [x] **T023** [P] Integration test backtesting execution flow in backtesting/tests/integration/test_backtest_flow.py
+- [x] **T024** [P] Integration test real-time trading signal detection in runtime/tests/integration/test_realtime_signals.py
+- [x] **T025** [P] Integration test risk parameter enforcement in backend/tests/integration/test_risk_enforcement.py
+- [x] **T026** [P] Integration test notification dispatch system in notifications/tests/integration/test_notification_flow.py
 
 ## Phase 3.3: Core Data Models (ONLY after tests are failing)
 - [ ] **T027** [P] TradingSignal model in backend/src/models/trading_signal.py

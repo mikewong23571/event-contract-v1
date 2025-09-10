@@ -1,4 +1,4 @@
-import React from 'react';
+/* Using the automatic JSX runtime; no explicit React import required. */
 
 /**
  * SignalList

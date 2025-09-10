@@ -8,7 +8,7 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
     'next/core-web-vitals',
   ],
   parser: '@typescript-eslint/parser',
@@ -19,7 +19,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'import'],
   
   // Global rules for all files
   rules: {
@@ -59,7 +59,7 @@ module.exports = {
       files: ['frontend/**/*.{js,jsx,ts,tsx}'],
       extends: [
         'next/core-web-vitals',
-        '@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended',
       ],
       rules: {
         // Next.js specific rules

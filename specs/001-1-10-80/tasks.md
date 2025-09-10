@@ -88,7 +88,7 @@
 
 ## Phase 3.8: Frontend Components
 - [x] **T057** [P] SignalList component in frontend/src/components/signals/SignalList.tsx
-- [ ] **T058** [P] SignalCard component in frontend/src/components/signals/SignalCard.tsx
+- [x] **T058** [P] SignalCard component in frontend/src/components/signals/SignalCard.tsx
 - [ ] **T059** [P] MarketDataChart component in frontend/src/components/charts/MarketDataChart.tsx
 - [ ] **T060** [P] RiskParameters component in frontend/src/components/risk/RiskParameters.tsx
 - [ ] **T061** [P] BacktestResults component in frontend/src/components/backtesting/BacktestResults.tsx

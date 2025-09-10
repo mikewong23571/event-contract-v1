@@ -1,0 +1,31 @@
+[tool.black]
+# Global black configuration for all Python components
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    # Directories to exclude
+    \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | \.pytest_cache
+    # Component-specific excludes
+    | backend/migrations
+    | backtesting/data
+    | backtesting/results  
+    | runtime/logs
+    | notifications/templates
+)/
+'''
+# Skip string normalization for better SQL/template compatibility
+skip-string-normalization = true
+# Preview features
+preview = false

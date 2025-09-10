@@ -1,0 +1,101 @@
+# Event Contract Trading System - Development Tools
+# Unified commands for linting, formatting, and quality checks
+
+.PHONY: help format lint type-check test clean install-tools
+
+# Default target
+help:
+	@echo "Event Contract Trading System - Development Commands"
+	@echo ""
+	@echo "Available commands:"
+	@echo "  make format       - Format all code (Python: black, isort; JS/TS: prettier)"
+	@echo "  make lint         - Lint all code (Python: flake8; JS/TS: eslint)"
+	@echo "  make type-check   - Type check all code (Python: mypy; TS: tsc)"
+	@echo "  make test         - Run all tests"
+	@echo "  make clean        - Clean build artifacts and caches"
+	@echo "  make install-tools - Install development tools"
+	@echo ""
+	@echo "Component-specific:"
+	@echo "  make format-python    - Format Python code only"
+	@echo "  make format-frontend  - Format frontend code only"
+	@echo "  make lint-python      - Lint Python code only"
+	@echo "  make lint-frontend    - Lint frontend code only"
+
+# Install development tools
+install-tools:
+	@echo "Installing Python development tools..."
+	pip install black flake8 isort mypy
+	@echo "Installing Node.js development tools..."
+	cd frontend && npm install --save-dev eslint prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier-plugin-tailwindcss
+
+# Format all code
+format: format-python format-frontend
+	@echo "All code formatted successfully!"
+
+format-python:
+	@echo "Formatting Python code with black and isort..."
+	black backend/ backtesting/ runtime/ notifications/
+	isort backend/ backtesting/ runtime/ notifications/
+
+format-frontend:
+	@echo "Formatting frontend code with prettier..."
+	cd frontend && npx prettier --write .
+
+# Lint all code
+lint: lint-python lint-frontend
+	@echo "All linting completed!"
+
+lint-python:
+	@echo "Linting Python code with flake8..."
+	flake8 backend/ backtesting/ runtime/ notifications/
+
+lint-frontend:
+	@echo "Linting frontend code with eslint..."
+	cd frontend && npx eslint . --ext .js,.jsx,.ts,.tsx
+
+# Type checking
+type-check: type-check-python type-check-frontend
+	@echo "All type checking completed!"
+
+type-check-python:
+	@echo "Type checking Python code with mypy..."
+	mypy backend/src/
+	mypy backtesting/src/
+	mypy runtime/src/
+	mypy notifications/src/
+
+type-check-frontend:
+	@echo "Type checking frontend code with tsc..."
+	cd frontend && npx tsc --noEmit
+
+# Run tests
+test:
+	@echo "Running all tests..."
+	cd backend && python -m pytest
+	cd backtesting && python -m pytest
+	cd runtime && python -m pytest
+	cd notifications && python -m pytest
+	cd frontend && npm run test
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning build artifacts and caches..."
+	find . -type f -name "*.pyc" -delete
+	find . -type d -name "__pycache__" -delete
+	find . -type d -name ".pytest_cache" -delete
+	find . -type d -name ".mypy_cache" -delete
+	rm -rf backend/dist/ backend/build/ backend/*.egg-info/
+	rm -rf backtesting/dist/ backtesting/build/ backtesting/*.egg-info/
+	rm -rf runtime/dist/ runtime/build/ runtime/*.egg-info/
+	rm -rf notifications/dist/ notifications/build/ notifications/*.egg-info/
+	cd frontend && rm -rf .next/ dist/ build/ node_modules/.cache/
+
+# Shortcuts for quick development
+fix: format lint
+	@echo "Code formatted and linted!"
+
+check: lint type-check
+	@echo "Code checked for issues!"
+
+ci: format lint type-check test
+	@echo "Full CI pipeline completed!"

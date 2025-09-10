@@ -1,0 +1,218 @@
+# Event Contract Trading System - Git Ignore Rules
+
+# =============================================================================
+# ENVIRONMENT FILES
+# =============================================================================
+# Exclude environment files (except .env.example)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+node_modules/
+**/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =============================================================================
+# IDE AND EDITOR FILES
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# =============================================================================
+# BUILD OUTPUTS
+# =============================================================================
+# Frontend
+.next/
+out/
+build/
+dist/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# =============================================================================
+# LOGS AND RUNTIME FILES
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.stylelintcache
+
+# Runtime logs
+backend/logs/
+runtime/logs/
+notifications/logs/
+backtesting/logs/
+
+# =============================================================================
+# TESTING
+# =============================================================================
+coverage/
+.nyc_output
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+
+# =============================================================================
+# CACHES
+# =============================================================================
+.cache/
+.parcel-cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# =============================================================================
+# DATABASE FILES
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================================
+# DATA AND RESULTS
+# =============================================================================
+# Backtesting data and results
+backtesting/data/
+backtesting/results/
+*.h5
+*.parquet
+*.csv
+
+# Market data cache
+runtime/cache/
+backend/cache/
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+.dockerignore
+docker-compose.override.local.yml
+
+# =============================================================================
+# CERTIFICATES AND KEYS
+# =============================================================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# =============================================================================
+# TEMPORARY FILES
+# =============================================================================
+tmp/
+temp/
+*.tmp
+*.temp
+
+# =============================================================================
+# OS SPECIFIC
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# PACKAGE MANAGER
+# =============================================================================
+# npm
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# yarn
+yarn.lock
+
+# pnpm
+pnpm-lock.yaml
+
+# pip
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Poetry
+poetry.lock
+
+# =============================================================================
+# MISC
+# =============================================================================
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map

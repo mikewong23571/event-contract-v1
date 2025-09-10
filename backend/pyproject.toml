@@ -26,7 +26,7 @@ dependencies = [
     "influxdb-client==1.38.0",
     "redis==5.0.1",
     "pandas==2.1.4",
-    "numpy==1.25.2",
+    "numpy==1.26.4",
     "websockets==12.0",
     "pydantic==2.5.2",
     "pydantic-settings==2.1.0",

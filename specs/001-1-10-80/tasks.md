@@ -77,7 +77,7 @@
 - [x] **T048** POST /api/v1/market-data/stream endpoint in backend/src/api/market_data.py
 - [x] **T049** [P] GET /api/v1/risk-parameters endpoint in backend/src/api/risk.py
 - [x] **T050** [P] PUT /api/v1/risk-parameters endpoint in backend/src/api/risk.py
-- [ ] **T051** [P] POST /api/v1/backtests endpoint in backend/src/api/backtests.py
+- [x] **T051** [P] POST /api/v1/backtests endpoint in backend/src/api/backtests.py
 - [ ] **T052** [P] GET /api/v1/backtests/{id} endpoint in backend/src/api/backtests.py
 
 ## Phase 3.7: WebSocket Implementation

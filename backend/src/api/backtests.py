@@ -1,64 +1,76 @@
-from datetime import datetime
-from typing import Dict, Any
-from uuid import uuid4
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException
+from fastapi.encoders import jsonable_encoder
+from uuid import UUID
+
+from ..services.backtest_service import BacktestService
+from ...backtesting.src.models.backtest_result import BacktestResult
 
 
 router = APIRouter()
 
+# In-memory service instance (placeholder until persistence is added)
+_backtest_service = BacktestService()
 
-@router.post("/backtests", status_code=202)
-async def post_backtests(request: Request) -> Dict[str, Any]:
+
+def _serialize_backtest_result(result: BacktestResult) -> Dict[str, Any]:
+    """Serialize BacktestResult to contract-compliant response shape.
+
+    Contract expectations from tests for GET /api/v1/backtests/{id}:
+    - Always include: backtest_id (str UUID), status, strategy_name
+    - If status == COMPLETED: include results with total_trades, win_rate, total_return
+      and a human-readable summary string.
+    - If status == RUNNING: include progress (0-100). Not applicable here as we
+      only return completed cached results when found.
     """
-    POST /api/v1/backtests
 
-    Creates a backtest job and returns job metadata.
-
-    Contract expectations (from tests):
-    - JSON body with required fields: strategy_name, start_date, end_date, symbol
-    - Optional: initial_balance (stringified decimal)
-    - Returns 202 with JSON: backtest_id (UUID str), status (PENDING/RUNNING/QUEUED), created_at (ISO8601)
-    - Returns 400 on missing fields or invalid date format
-    """
-
-    # Enforce JSON content type explicitly
-    content_type = request.headers.get("content-type", "").lower()
-    if "application/json" not in content_type:
-        raise HTTPException(status_code=400, detail="content-type must be application/json")
-
-    try:
-        body = await request.json()
-    except Exception:
-        raise HTTPException(status_code=400, detail="invalid request body")
-
-    if not isinstance(body, dict):
-        raise HTTPException(status_code=400, detail="request body must be a JSON object")
-
-    # Required fields validation
-    required_fields = ["strategy_name", "start_date", "end_date", "symbol"]
-    for field in required_fields:
-        if field not in body or body.get(field) in (None, ""):
-            raise HTTPException(status_code=400, detail=f"{field} is required")
-
-    # Date validation (expecting YYYY-MM-DD)
-    start_date = body.get("start_date")
-    end_date = body.get("end_date")
-    try:
-        # Basic ISO date without time; invalid formats should raise
-        datetime.fromisoformat(start_date)
-        datetime.fromisoformat(end_date)
-    except Exception:
-        raise HTTPException(status_code=400, detail="invalid date format")
-
-    # At this stage we acknowledge job creation; actual execution is out of scope here
-    backtest_id = str(uuid4())
-    created_at = datetime.utcnow().isoformat() + "Z"
-
-    # Allowed statuses by contract: PENDING, RUNNING, QUEUED
-    return {
-        "backtest_id": backtest_id,
-        "status": "QUEUED",
-        "created_at": created_at,
+    # Base fields
+    payload: Dict[str, Any] = {
+        "backtest_id": str(result.id),
+        "status": "COMPLETED",
+        "strategy_name": result.strategy_name,
     }
+
+    # Completed results block
+    payload["results"] = {
+        "total_trades": int(result.total_signals),
+        "win_rate": float(result.win_rate),
+        "total_return": float(result.total_profit_loss),
+    }
+
+    payload["summary"] = (
+        f"Strategy {result.strategy_name}: trades={result.total_signals}, "
+        f"win_rate={float(result.win_rate):.2f}, return={float(result.total_profit_loss):.2f}"
+    )
+
+    # Ensure JSON serializable (e.g., Decimals)
+    return jsonable_encoder(payload, custom_encoder=BacktestResult.Config.json_encoders)
+
+
+@router.get("/backtests/{backtest_id}")
+async def get_backtest(backtest_id: str) -> Dict[str, Any]:
+    """
+    GET /api/v1/backtests/{id}
+
+    Retrieves a backtest result by ID.
+
+    Contract expectations:
+    - 400 if `backtest_id` is not a valid UUID string
+    - 404 if no backtest exists with the given ID
+    - 200 with JSON body containing required fields when found
+    """
+
+    # Validate UUID format explicitly (return 400 rather than 422)
+    try:
+        bt_uuid = UUID(backtest_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="invalid backtest id format")
+
+    # Look up result via service (currently searches in-memory cache)
+    result: Optional[BacktestResult] = _backtest_service.get_backtest_by_id(bt_uuid)
+    if result is None:
+        raise HTTPException(status_code=404, detail="backtest not found")
+
+    return _serialize_backtest_result(result)
 

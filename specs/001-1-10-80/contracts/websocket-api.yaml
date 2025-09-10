@@ -1,0 +1,461 @@
+asyncapi: 2.6.0
+info:
+  title: Event Contract Trading System WebSocket API
+  version: 0.1.0
+  description: Real-time trading signals and market data WebSocket API
+  contact:
+    name: Event Contract Trading System
+    email: support@eventcontract.trading
+
+servers:
+  development:
+    url: ws://localhost:8000/ws
+    protocol: ws
+    description: Development WebSocket server
+  production:
+    url: wss://api.eventcontract.trading/ws  
+    protocol: wss
+    description: Production WebSocket server (SSL)
+
+channels:
+  /signals/{symbol}:
+    description: Subscribe to trading signals for a specific symbol
+    parameters:
+      symbol:
+        description: Trading pair symbol (e.g., BTCUSDT)
+        schema:
+          type: string
+          pattern: '^[A-Z]{3,}USDT$'
+          examples:
+            - BTCUSDT
+            - ETHUSDT
+    subscribe:
+      summary: Receive real-time trading signals
+      operationId: subscribeToSignals
+      message:
+        $ref: '#/components/messages/TradingSignal'
+
+  /market-data/{symbol}:
+    description: Subscribe to market data updates for a symbol
+    parameters:
+      symbol:
+        description: Trading pair symbol
+        schema:
+          type: string
+          pattern: '^[A-Z]{3,}USDT$'
+    subscribe:
+      summary: Receive real-time market data
+      operationId: subscribeToMarketData
+      message:
+        $ref: '#/components/messages/MarketDataUpdate'
+
+  /system-status:
+    description: System health and performance updates
+    subscribe:
+      summary: Receive system status updates
+      operationId: subscribeToSystemStatus
+      message:
+        $ref: '#/components/messages/SystemStatus'
+
+  /alerts:
+    description: Risk management and trading alerts
+    subscribe:
+      summary: Receive trading alerts
+      operationId: subscribeToAlerts
+      message:
+        $ref: '#/components/messages/TradingAlert'
+
+  /client/commands:
+    description: Send commands to the server
+    publish:
+      summary: Send client commands
+      operationId: sendClientCommand
+      message:
+        $ref: '#/components/messages/ClientCommand'
+
+  /client/responses:
+    description: Receive command responses
+    subscribe:
+      summary: Receive command responses
+      operationId: receiveCommandResponse
+      message:
+        $ref: '#/components/messages/CommandResponse'
+
+components:
+  messages:
+    TradingSignal:
+      name: TradingSignal
+      title: Trading Signal Message
+      summary: Real-time trading signal with probability prediction
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TradingSignalPayload'
+
+    MarketDataUpdate:
+      name: MarketDataUpdate
+      title: Market Data Update
+      summary: Real-time market data (1-minute candlestick)
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/MarketDataPayload'
+
+    SystemStatus:
+      name: SystemStatus
+      title: System Status Update
+      summary: System health and performance metrics
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SystemStatusPayload'
+
+    TradingAlert:
+      name: TradingAlert
+      title: Trading Alert
+      summary: Risk management and trading alerts
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TradingAlertPayload'
+
+    ClientCommand:
+      name: ClientCommand
+      title: Client Command
+      summary: Command sent from client to server
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ClientCommandPayload'
+
+    CommandResponse:
+      name: CommandResponse
+      title: Command Response
+      summary: Server response to client command
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/CommandResponsePayload'
+
+  schemas:
+    TradingSignalPayload:
+      type: object
+      required:
+        - type
+        - data
+        - timestamp
+      properties:
+        type:
+          type: string
+          const: signal
+        data:
+          type: object
+          required:
+            - id
+            - symbol
+            - direction
+            - predicted_probability
+            - confidence_level
+            - expiry_time
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique signal identifier
+            symbol:
+              type: string
+              description: Trading pair
+              example: BTCUSDT
+            direction:
+              type: string
+              enum: [UP, DOWN]
+              description: Predicted price direction
+            predicted_probability:
+              type: number
+              minimum: 0.0
+              maximum: 1.0
+              description: Model prediction probability
+              example: 0.67
+            confidence_level:
+              type: string
+              enum: [LOW, MEDIUM, HIGH]
+              description: Signal confidence classification
+            expiry_time:
+              type: string
+              format: date-time
+              description: When the prediction expires
+            probability_edge:
+              type: number
+              description: Advantage over market implied probability
+              example: 0.08
+            strategy_version:
+              type: string
+              description: Model version that generated signal
+              example: "ensemble_v1.2.0"
+            technical_indicators:
+              type: object
+              description: Supporting technical analysis
+              properties:
+                rsi:
+                  type: number
+                  example: 45.2
+                macd:
+                  type: number
+                  example: 0.0012
+                bb_position:
+                  type: number
+                  example: 0.3
+                volume_profile:
+                  type: string
+                  example: "bullish"
+        timestamp:
+          type: string
+          format: date-time
+          description: When the signal was generated
+
+    MarketDataPayload:
+      type: object
+      required:
+        - type
+        - data
+        - timestamp
+      properties:
+        type:
+          type: string
+          const: market_data
+        data:
+          type: object
+          required:
+            - symbol
+            - open_price
+            - high_price
+            - low_price
+            - close_price
+            - volume
+          properties:
+            symbol:
+              type: string
+              example: BTCUSDT
+            timestamp:
+              type: string
+              format: date-time
+              description: Start of the 1-minute period
+            open_price:
+              type: string
+              description: Opening price (as string for precision)
+              example: "43250.50"
+            high_price:
+              type: string
+              description: Highest price in period
+              example: "43280.75"
+            low_price:
+              type: string
+              description: Lowest price in period
+              example: "43200.25"
+            close_price:
+              type: string
+              description: Closing price
+              example: "43265.30"
+            volume:
+              type: string
+              description: Volume in base asset
+              example: "12.45678900"
+            quote_volume:
+              type: string
+              description: Volume in quote asset
+              example: "538745.12345678"
+            trade_count:
+              type: integer
+              description: Number of trades in period
+              example: 156
+            price_change:
+              type: string
+              description: Price change from previous period
+              example: "15.30"
+            price_change_percent:
+              type: string
+              description: Percentage price change
+              example: "0.035"
+        timestamp:
+          type: string
+          format: date-time
+
+    SystemStatusPayload:
+      type: object
+      required:
+        - type
+        - data
+        - timestamp
+      properties:
+        type:
+          type: string
+          const: system_status
+        data:
+          type: object
+          required:
+            - status
+            - components
+          properties:
+            status:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+              description: Overall system status
+            components:
+              type: object
+              description: Individual component status
+              properties:
+                signal_generator:
+                  $ref: '#/components/schemas/ComponentStatus'
+                market_data_feed:
+                  $ref: '#/components/schemas/ComponentStatus'
+                risk_manager:
+                  $ref: '#/components/schemas/ComponentStatus'
+                database:
+                  $ref: '#/components/schemas/ComponentStatus'
+                backtesting_engine:
+                  $ref: '#/components/schemas/ComponentStatus'
+            metrics:
+              type: object
+              properties:
+                signals_generated_today:
+                  type: integer
+                avg_signal_latency_ms:
+                  type: integer
+                active_websocket_connections:
+                  type: integer
+                system_uptime_hours:
+                  type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    ComponentStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [ok, warning, error]
+        message:
+          type: string
+          description: Human-readable status message
+        last_check:
+          type: string
+          format: date-time
+        response_time_ms:
+          type: integer
+          description: Component response time
+
+    TradingAlertPayload:
+      type: object
+      required:
+        - type
+        - data
+        - timestamp
+      properties:
+        type:
+          type: string
+          const: alert
+        data:
+          type: object
+          required:
+            - alert_type
+            - severity
+            - message
+          properties:
+            alert_type:
+              type: string
+              enum: 
+                - risk_limit_reached
+                - signal_generation_failed
+                - market_data_stale
+                - high_probability_signal
+                - system_maintenance
+              description: Type of alert
+            severity:
+              type: string
+              enum: [info, warning, error, critical]
+              description: Alert severity level
+            message:
+              type: string
+              description: Human-readable alert message
+              example: "Daily bet limit reached (10/10). No more signals will be generated today."
+            symbol:
+              type: string
+              description: Related trading pair (if applicable)
+            metadata:
+              type: object
+              description: Additional alert context
+              properties:
+                current_value:
+                  type: string
+                threshold_value:
+                  type: string
+                recommendation:
+                  type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ClientCommandPayload:
+      type: object
+      required:
+        - command
+        - request_id
+      properties:
+        command:
+          type: string
+          enum:
+            - subscribe
+            - unsubscribe
+            - get_status
+            - update_risk_params
+            - generate_signal
+          description: Command to execute
+        request_id:
+          type: string
+          description: Unique request identifier for matching responses
+        parameters:
+          type: object
+          description: Command-specific parameters
+          properties:
+            channel:
+              type: string
+              description: Channel to subscribe/unsubscribe (for sub/unsub commands)
+            symbol:
+              type: string
+              description: Symbol parameter (for signal generation)
+            risk_parameters:
+              type: object
+              description: New risk parameters (for update_risk_params)
+        timestamp:
+          type: string
+          format: date-time
+
+    CommandResponsePayload:
+      type: object
+      required:
+        - request_id
+        - status
+      properties:
+        request_id:
+          type: string
+          description: Request ID from original command
+        status:
+          type: string
+          enum: [success, error]
+          description: Command execution status
+        message:
+          type: string
+          description: Human-readable response message
+        data:
+          type: object
+          description: Response data (if applicable)
+        error_code:
+          type: string
+          description: Error code (if status is error)
+        timestamp:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: httpApiKey
+      name: Authorization
+      in: header
+      description: API key for WebSocket authentication

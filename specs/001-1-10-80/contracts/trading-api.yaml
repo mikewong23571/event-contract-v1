@@ -1,0 +1,662 @@
+openapi: 3.0.3
+info:
+  title: Event Contract Trading System API
+  description: API for probability-based trading signals and risk management
+  version: 0.1.0
+  contact:
+    name: Event Contract Trading System
+    email: support@eventcontract.trading
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development server
+  - url: https://api.eventcontract.trading/v1  
+    description: Production server
+
+paths:
+  /signals:
+    get:
+      summary: Get recent trading signals
+      description: Retrieve trading signals with optional filtering
+      parameters:
+        - name: symbol
+          in: query
+          description: Trading pair symbol (e.g., BTCUSDT)
+          schema:
+            type: string
+            example: BTCUSDT
+        - name: since
+          in: query
+          description: Get signals since timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: confidence
+          in: query
+          description: Minimum confidence level
+          schema:
+            type: string
+            enum: [LOW, MEDIUM, HIGH]
+        - name: limit
+          in: query
+          description: Maximum number of signals to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: List of trading signals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TradingSignal'
+                  total_count:
+                    type: integer
+                  has_more:
+                    type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Generate trading signal manually
+      description: Trigger signal generation for specific symbol (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+              properties:
+                symbol:
+                  type: string
+                  example: BTCUSDT
+                force_calculation:
+                  type: boolean
+                  default: false
+                  description: Bypass caching and recalculate
+      responses:
+        '201':
+          description: Signal generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradingSignal'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Signal already exists for current time period
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /signals/{signal_id}:
+    get:
+      summary: Get specific trading signal
+      parameters:
+        - name: signal_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trading signal details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradingSignal'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /market-data/{symbol}:
+    get:
+      summary: Get recent market data
+      parameters:
+        - name: symbol
+          in: path
+          required: true
+          schema:
+            type: string
+            example: BTCUSDT
+        - name: interval
+          in: query
+          description: Time interval for data points
+          schema:
+            type: string
+            enum: ['1m', '5m', '15m', '1h']
+            default: '1m'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+      responses:
+        '200':
+          description: Market data points
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                  interval:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MarketData'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /risk-parameters:
+    get:
+      summary: Get user risk parameters
+      responses:
+        '200':
+          description: Current risk parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskParameters'
+        '404':
+          description: No risk parameters configured
+
+    put:
+      summary: Update risk parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskParametersUpdate'
+      responses:
+        '200':
+          description: Risk parameters updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskParameters'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /backtests:
+    get:
+      summary: List backtest results
+      parameters:
+        - name: strategy_name
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: List of backtest results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BacktestResult'
+
+    post:
+      summary: Start new backtest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BacktestRequest'
+      responses:
+        '202':
+          description: Backtest started (async operation)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  backtest_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [QUEUED, RUNNING]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /backtests/{backtest_id}:
+    get:
+      summary: Get backtest result
+      parameters:
+        - name: backtest_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Backtest result with trade details
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BacktestResult'
+                  - type: object
+                    properties:
+                      trades:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BacktestTrade'
+
+  /metrics/performance:
+    get:
+      summary: Get system performance metrics
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Performance metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metrics:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PerformanceMetrics'
+                  summary:
+                    $ref: '#/components/schemas/PerformanceSummary'
+
+  /health:
+    get:
+      summary: System health check
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                  checks:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [ok, error]
+                      market_data_feed:
+                        type: string
+                        enum: [ok, error]
+                      signal_generation:
+                        type: string
+                        enum: [ok, error]
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    TradingSignal:
+      type: object
+      required:
+        - id
+        - timestamp
+        - symbol
+        - direction
+        - predicted_probability
+        - confidence_level
+        - expiry_time
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        symbol:
+          type: string
+          example: BTCUSDT
+        direction:
+          type: string
+          enum: [UP, DOWN]
+        predicted_probability:
+          type: number
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.67
+        confidence_level:
+          type: string
+          enum: [LOW, MEDIUM, HIGH]
+        expiry_time:
+          type: string
+          format: date-time
+        strategy_version:
+          type: string
+          example: "ensemble_v1.2.0"
+        technical_indicators:
+          type: object
+          example:
+            rsi: 45.2
+            macd: 0.0012
+            bb_position: 0.3
+        probability_edge:
+          type: number
+          description: Advantage over implied probability
+          example: 0.08
+        created_at:
+          type: string
+          format: date-time
+
+    MarketData:
+      type: object
+      required:
+        - symbol
+        - timestamp
+        - open_price
+        - high_price  
+        - low_price
+        - close_price
+        - volume
+      properties:
+        symbol:
+          type: string
+          example: BTCUSDT
+        timestamp:
+          type: string
+          format: date-time
+        open_price:
+          type: string
+          example: "43250.50"
+        high_price:
+          type: string
+          example: "43280.75"
+        low_price:
+          type: string
+          example: "43200.25"
+        close_price:
+          type: string
+          example: "43265.30"
+        volume:
+          type: string
+          example: "12.45678900"
+        quote_volume:
+          type: string
+          example: "538745.12345678"
+        trade_count:
+          type: integer
+          example: 156
+
+    RiskParameters:
+      type: object
+      required:
+        - max_bet_size
+        - max_daily_bets
+        - max_parallel_positions
+        - min_probability_edge
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+        max_bet_size:
+          type: string
+          example: "100.00"
+        max_daily_bets:
+          type: integer
+          example: 10
+        max_parallel_positions:
+          type: integer
+          example: 3
+        min_probability_edge:
+          type: string
+          example: "0.05"
+        frequency_limit_minutes:
+          type: integer
+          example: 15
+        max_daily_loss:
+          type: string
+          example: "500.00"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RiskParametersUpdate:
+      type: object
+      properties:
+        max_bet_size:
+          type: string
+        max_daily_bets:
+          type: integer
+          minimum: 1
+        max_parallel_positions:
+          type: integer
+          minimum: 1
+        min_probability_edge:
+          type: string
+        frequency_limit_minutes:
+          type: integer
+          minimum: 1
+        max_daily_loss:
+          type: string
+
+    BacktestRequest:
+      type: object
+      required:
+        - strategy_name
+        - start_date
+        - end_date
+        - symbol
+      properties:
+        strategy_name:
+          type: string
+          example: "ensemble_v1"
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        symbol:
+          type: string
+          example: "BTCUSDT"
+        execution_mode:
+          type: string
+          enum: [FIRST_SIGNAL, CONTINUOUS, ENHANCED]
+          default: CONTINUOUS
+        parameters:
+          type: object
+          description: Strategy-specific parameters
+          example:
+            min_confidence: "MEDIUM"
+            risk_per_trade: "0.02"
+
+    BacktestResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        strategy_name:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        total_signals:
+          type: integer
+        successful_signals:
+          type: integer
+        win_rate:
+          type: string
+          example: "0.675"
+        total_profit_loss:
+          type: string
+          example: "245.67"
+        max_drawdown:
+          type: string
+          example: "89.32"
+        sharpe_ratio:
+          type: string
+          example: "1.43"
+        execution_mode:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [QUEUED, RUNNING, COMPLETED, FAILED]
+
+    BacktestTrade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        signal_timestamp:
+          type: string
+          format: date-time
+        direction:
+          type: string
+          enum: [UP, DOWN]
+        entry_price:
+          type: string
+        exit_price:
+          type: string
+        bet_amount:
+          type: string
+        profit_loss:
+          type: string
+        was_successful:
+          type: boolean
+        contract_duration_minutes:
+          type: integer
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        total_signals_generated:
+          type: integer
+        total_signals_executed:
+          type: integer
+        daily_win_rate:
+          type: string
+        daily_profit_loss:
+          type: string
+        avg_signal_latency_ms:
+          type: integer
+        system_uptime_percentage:
+          type: string
+
+    PerformanceSummary:
+      type: object
+      properties:
+        overall_win_rate:
+          type: string
+        total_profit_loss:
+          type: string
+        best_day:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date
+            profit_loss:
+              type: string
+        worst_day:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date
+            profit_loss:
+              type: string
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+security:
+  - ApiKeyAuth: []

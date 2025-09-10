@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api.signals import router as signals_router
 from .api.market_data import router as market_data_router
+from .api.risk import router as risk_router
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -47,6 +48,7 @@ async def health_check():
 # Include API routers
 app.include_router(signals_router, prefix="/api/v1")
 app.include_router(market_data_router, prefix="/api/v1")
+app.include_router(risk_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

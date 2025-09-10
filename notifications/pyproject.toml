@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "event-contract-notifications"
+version = "0.1.0"
+description = "Event Contract Trading System - Notifications Service"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "aiohttp==3.9.1",
+    "httpx==0.25.2",
+    "requests==2.31.0",
+    "python-telegram-bot==20.7",
+    "aiogram==3.3.0",
+    "larksuiteoapi==1.2.8",
+    "aiosmtplib==3.0.1",
+    "email-validator==2.1.0",
+    "celery[redis]==5.3.4",
+    "redis==5.0.1",
+    "jinja2==3.1.2",
+    "markdown==3.5.1",
+    "pydantic==2.5.2",
+    "pydantic-settings==2.1.0",
+    "python-dotenv==1.0.0",
+    "sqlalchemy==2.0.23",
+    "asyncpg==0.29.0",
+    "structlog==23.2.0",
+    "prometheus-client==0.19.0",
+    "asyncio==3.4.3",
+    "aiofiles==23.2.1",
+    "python-dateutil==2.8.2",
+    "pytz==2023.3",
+    "click==8.1.7",
+    "schedule==1.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.3",
+    "pytest-asyncio==0.21.1",
+    "pytest-mock==3.12.0",
+    "httpx-mock==0.10.0",
+    "black==23.11.0",
+    "flake8==6.1.0",
+    "isort==5.12.0",
+    "mypy==1.7.1",
+]
+
+[project.scripts]
+notifications = "src.main:main"
+notify = "src.cli.notification_cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.celery]
+broker_url = "redis://localhost:6379/1"
+result_backend = "redis://localhost:6379/1"
+task_serializer = "json"
+accept_content = ["json"]
+result_serializer = "json"
+timezone = "UTC"
+enable_utc = true

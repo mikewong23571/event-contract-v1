@@ -1,0 +1,60 @@
+# HTTP client libraries
+aiohttp==3.9.1
+httpx==0.25.2
+requests==2.31.0
+
+# Telegram Bot API
+python-telegram-bot==20.7
+aiogram==3.3.0
+
+# Feishu (Lark) API client
+larksuiteoapi==1.2.8
+
+# Email notifications
+aiosmtplib==3.0.1
+email-validator==2.1.0
+
+# Message queuing and async processing
+celery[redis]==5.3.4
+redis==5.0.1
+
+# Template engine for notifications
+jinja2==3.1.2
+markdown==3.5.1
+
+# Configuration and validation
+pydantic==2.5.2
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Database connections
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+
+# Logging and monitoring
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# Async utilities
+asyncio==3.4.3
+aiofiles==23.2.1
+
+# Date and time handling
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Utility libraries
+click==8.1.7
+schedule==1.2.1
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0
+httpx-mock==0.10.0
+
+# Development tools
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+mypy==1.7.1

@@ -103,9 +103,9 @@
 - [x] **T068** Binance WebSocket client in runtime/src/clients/binance_client.py
 
 ## Phase 3.10: Backtesting Engine Components
-- [ ] **T069** [P] Historical data loader in backtesting/src/loaders/data_loader.py
-- [ ] **T070** [P] Strategy simulator in backtesting/src/simulators/strategy_simulator.py
-- [ ] **T071** [P] Performance analyzer in backtesting/src/analyzers/performance_analyzer.py
+- [x] **T069** [P] Historical data loader in backtesting/src/loaders/data_loader.py
+- [x] **T070** [P] Strategy simulator in backtesting/src/simulators/strategy_simulator.py
+- [x] **T071** [P] Performance analyzer in backtesting/src/analyzers/performance_analyzer.py
 - [ ] **T072** Backtest report generator in backtesting/src/generators/report_generator.py
 
 ## Phase 3.11: Notifications Components

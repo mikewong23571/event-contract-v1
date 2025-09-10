@@ -87,7 +87,7 @@
 - [x] **T056** WebSocket connection manager in backend/src/websocket/connection_manager.py
 
 ## Phase 3.8: Frontend Components
-- [ ] **T057** [P] SignalList component in frontend/src/components/signals/SignalList.tsx
+- [x] **T057** [P] SignalList component in frontend/src/components/signals/SignalList.tsx
 - [ ] **T058** [P] SignalCard component in frontend/src/components/signals/SignalCard.tsx
 - [ ] **T059** [P] MarketDataChart component in frontend/src/components/charts/MarketDataChart.tsx
 - [ ] **T060** [P] RiskParameters component in frontend/src/components/risk/RiskParameters.tsx

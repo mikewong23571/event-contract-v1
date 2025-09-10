@@ -81,7 +81,7 @@
 - [x] **T052** [P] GET /api/v1/backtests/{id} endpoint in backend/src/api/backtests.py
 
 ## Phase 3.7: WebSocket Implementation
-- [ ] **T053** [P] WebSocket /ws/signals handler in backend/src/websocket/signals_ws.py
+- [x] **T053** [P] WebSocket /ws/signals handler in backend/src/websocket/signals_ws.py
 - [ ] **T054** [P] WebSocket /ws/market-data handler in backend/src/websocket/market_data_ws.py
 - [ ] **T055** [P] WebSocket /ws/alerts handler in backend/src/websocket/alerts_ws.py
 - [ ] **T056** WebSocket connection manager in backend/src/websocket/connection_manager.py

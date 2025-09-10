@@ -11,6 +11,7 @@ from .api.market_data import router as market_data_router
 from .api.risk import router as risk_router
 from .api.backtests import router as backtests_router
 from .api.backtests import router as backtests_router
+from .websocket.signals_ws import router as signals_ws_router
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -54,6 +55,8 @@ app.include_router(risk_router, prefix="/api/v1")
 app.include_router(backtests_router, prefix="/api/v1")
 app.include_router(backtests_router, prefix="/api/v1")
 
+# Include WebSocket routers
+app.include_router(signals_ws_router)
 
 if __name__ == "__main__":
     import uvicorn

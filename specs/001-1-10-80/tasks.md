@@ -71,7 +71,7 @@
 - [x] **T044** NotificationService class in backend/src/services/notification_service.py
 
 ## Phase 3.6: API Endpoints Implementation
-- [ ] **T045** GET /api/v1/signals endpoint in backend/src/api/signals.py
+- [x] **T045** GET /api/v1/signals endpoint in backend/src/api/signals.py
 - [ ] **T046** POST /api/v1/signals/generate endpoint in backend/src/api/signals.py
 - [ ] **T047** GET /api/v1/market-data endpoint in backend/src/api/market_data.py
 - [ ] **T048** POST /api/v1/market-data/stream endpoint in backend/src/api/market_data.py

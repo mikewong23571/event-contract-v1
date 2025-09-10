@@ -6,6 +6,7 @@ FastAPI application entry point for the trading system backend.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .api.signals import router as signals_router
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -41,6 +42,9 @@ async def root():
 async def health_check():
     """Health check endpoint for monitoring."""
     return {"status": "healthy", "service": "backend"}
+
+# Include API routers
+app.include_router(signals_router, prefix="/api/v1")
 
 
 if __name__ == "__main__":

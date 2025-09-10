@@ -89,12 +89,12 @@
 ## Phase 3.8: Frontend Components
 - [x] **T057** [P] SignalList component in frontend/src/components/signals/SignalList.tsx
 - [x] **T058** [P] SignalCard component in frontend/src/components/signals/SignalCard.tsx
-- [ ] **T059** [P] MarketDataChart component in frontend/src/components/charts/MarketDataChart.tsx
-- [ ] **T060** [P] RiskParameters component in frontend/src/components/risk/RiskParameters.tsx
-- [ ] **T061** [P] BacktestResults component in frontend/src/components/backtesting/BacktestResults.tsx
-- [ ] **T062** [P] Dashboard layout component in frontend/src/components/layout/Dashboard.tsx
-- [ ] **T063** [P] Real-time WebSocket client in frontend/src/services/websocket.ts
-- [ ] **T064** [P] API client service in frontend/src/services/api.ts
+- [x] **T059** [P] MarketDataChart component in frontend/src/components/charts/MarketDataChart.tsx
+- [x] **T060** [P] RiskParameters component in frontend/src/components/risk/RiskParameters.tsx
+- [x] **T061** [P] BacktestResults component in frontend/src/components/backtesting/BacktestResults.tsx
+- [x] **T062** [P] Dashboard layout component in frontend/src/components/layout/Dashboard.tsx
+- [x] **T063** [P] Real-time WebSocket client in frontend/src/services/websocket.ts
+- [x] **T064** [P] API client service in frontend/src/services/api.ts
 
 ## Phase 3.9: Runtime Engine Components
 - [ ] **T065** [P] Real-time market data processor in runtime/src/processors/market_data_processor.py

@@ -16,6 +16,10 @@ Base URL: `/api/v1`
   - Body: `{ symbol: string, force_calculation?: boolean }`
   - 201: TradingSignal JSON `{ id, timestamp, symbol, direction, predicted_probability, confidence_level, expiry_time, ... }`
 
+- GET `/api/v1/signals/{signal_id}`
+  - 200: TradingSignal JSON
+  - 404: unknown id; 400: invalid UUID
+
 ### WebSocket: `/ws/signals/{symbol}`
 - Subscribes to live signal events for a symbol (pattern: `^[A-Z]{3,}USDT$`)
 - Message schema (when used): `{ id, symbol, direction, predicted_probability, confidence_level, expiry_time }`
@@ -29,7 +33,7 @@ Base URL: `/api/v1`
   - Body: `{ symbol: string, interval?: "1m"|"5m"|"15m"|"1h", client_id?: string }`
   - 201: `{ stream_id, symbol, status }`
 
-### WebSocket: `/ws/market-data`
+### WebSocket: `/ws/market-data/{symbol}`
 - Subscribes to live market data updates
 - Message schema: `{ symbol, timestamp, price, volume }`
 
@@ -48,6 +52,15 @@ Base URL: `/api/v1`
 
 - GET `/api/v1/backtests/{id}`
   - 200: `{ backtest_id, status, strategy_name, results: { total_trades, win_rate, total_return }, summary }`
+
+- GET `/api/v1/backtests`
+  - Query: `strategy_name?`, `limit? (1..100)`
+  - 200: `{ results: [{ backtest_id, status, strategy_name }] }`
+
+## Metrics
+- GET `/api/v1/metrics/performance`
+  - Query: `start_date? (YYYY-MM-DD)`, `end_date? (YYYY-MM-DD)`
+  - 200: `{ metrics: PerformanceMetrics[], summary: { overall_win_rate, total_profit_loss, best_day, worst_day } }`
 
 ### WebSocket: `/ws/alerts`
 - Subscribes to system or risk alerts

@@ -51,6 +51,50 @@ def _serialize_backtest_result(result: Any) -> Dict[str, Any]:
     return jsonable_encoder(payload)
 
 
+@router.get("/backtests")
+async def list_backtests(
+    strategy_name: Optional[str] = None,
+    limit: Optional[int] = None,
+) -> Dict[str, Any]:
+    """
+    GET /api/v1/backtests
+
+    Lists backtest jobs/results.
+
+    Contract expectations:
+    - 200 with { results: [...] }
+    - Supports optional filters: strategy_name? and limit? (1..100)
+    """
+    # Validate limit explicitly to return 400 on violations
+    if limit is not None:
+        try:
+            lim = int(limit)
+        except Exception:
+            raise HTTPException(status_code=400, detail="invalid limit")
+        if lim < 1 or lim > 100:
+            raise HTTPException(status_code=400, detail="limit must be between 1 and 100")
+        limit = lim
+
+    # Build list from in-memory registry
+    items = []
+    for bt_id, entry in _BACKTEST_REGISTRY.items():
+        if strategy_name and entry.get("strategy_name") != strategy_name:
+            continue
+        items.append(
+            {
+                "backtest_id": bt_id,
+                "status": entry.get("status", "QUEUED"),
+                "strategy_name": entry.get("strategy_name", "unknown"),
+            }
+        )
+
+    # Apply limit if provided
+    if limit is not None:
+        items = items[: limit]
+
+    return {"results": items}
+
+
 @router.post("/backtests", status_code=202)
 async def post_backtest(request: Request) -> Dict[str, Any]:
     """

@@ -16,6 +16,9 @@ class ConfidenceLevel(str, Enum):
 
 router = APIRouter()
 
+# In-memory registry to enable lookup by signal_id (contract support)
+_SIGNALS_REGISTRY: Dict[str, TradingSignal] = {}
+
 
 @router.get("/signals")
 async def get_signals(
@@ -134,6 +137,35 @@ async def post_signals_generate(request: Request) -> Dict[str, Any]:
         expires_at=expiry,
     )
 
+    # Persist generated signal for retrieval via GET /signals/{signal_id}
+    _SIGNALS_REGISTRY[str(signal.id)] = signal
+
     # Convert to serializable dict using model config encoders
     payload = signal.dict()
     return payload
+
+
+@router.get("/signals/{signal_id}")
+async def get_signal_by_id(signal_id: str) -> Dict[str, Any]:
+    """
+    GET /api/v1/signals/{signal_id}
+
+    Returns the full TradingSignal by id.
+    - 200 with TradingSignal JSON on success
+    - 404 if unknown signal_id
+    - 400 if invalid UUID format
+    """
+    from uuid import UUID
+    from fastapi.encoders import jsonable_encoder
+
+    # Validate UUID explicitly to return 400 (not 422)
+    try:
+        sid = UUID(signal_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="invalid signal id format")
+
+    signal = _SIGNALS_REGISTRY.get(str(sid))
+    if signal is None:
+        raise HTTPException(status_code=404, detail="signal not found")
+
+    return jsonable_encoder(signal, custom_encoder=TradingSignal.Config.json_encoders)

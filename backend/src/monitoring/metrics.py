@@ -273,3 +273,29 @@ class MetricsRegistry:
 # Global registry instance for convenience imports
 metrics_registry = MetricsRegistry()
 
+
+def get_system_metrics() -> Dict[str, float]:
+    """Get current system metrics for WebSocket status broadcasts."""
+    pipeline_metrics = metrics_registry.data_pipeline.get_metrics()
+    
+    # Get today's performance metrics 
+    daily_metrics, _ = metrics_registry.performance.get_daily_metrics(
+        start=datetime.utcnow().date(), 
+        end=datetime.utcnow().date()
+    )
+    
+    signals_today = daily_metrics[0].total_signals_generated if daily_metrics else 0
+    avg_latency = daily_metrics[0].avg_signal_latency_ms if daily_metrics else 50
+    uptime_hours = (datetime.utcnow() - metrics_registry.performance._start_time).total_seconds() / 3600
+    
+    return {
+        "signals_generated_today": signals_today,
+        "avg_signal_latency_ms": avg_latency,
+        "system_uptime_hours": round(uptime_hours, 2),
+        "ingestion_rate": pipeline_metrics.get("ingestion_rate", 0),
+        "processing_latency": pipeline_metrics.get("processing_latency", 0),
+        "error_rate": pipeline_metrics.get("error_rate", 0),
+        "data_quality_score": pipeline_metrics.get("data_quality_score", 1.0),
+        "storage_utilization": pipeline_metrics.get("storage_utilization", 0),
+    }
+

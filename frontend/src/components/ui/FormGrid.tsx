@@ -32,7 +32,7 @@ const FormGrid = forwardRef<HTMLDivElement, FormGridProps>(
           'grid gap-4',
           // 响应式列数
           getGridCols(colsSm),
-          `sm:${getGridCols(colsMd)}`,
+          `md:${getGridCols(colsMd)}`,
           `lg:${getGridCols(colsLg)}`,
           className
         )}

@@ -26,6 +26,9 @@ export type { ControlBarProps } from './ControlBar';
 export { FormGrid } from './FormGrid';
 export type { FormGridProps } from './FormGrid';
 
+export { FormLayout } from './FormLayout';
+// export type { FormLayoutProps } from './FormLayout';
+
 // Feedback Components
 export { ErrorBanner } from './ErrorBanner';
 export type { ErrorBannerProps } from './ErrorBanner';

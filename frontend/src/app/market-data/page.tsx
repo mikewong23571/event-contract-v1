@@ -8,9 +8,9 @@ import {
   Button, 
   Select, 
   PageHeader, 
-  ControlBar, 
   FormGrid, 
-  ErrorBanner 
+  ErrorBanner, 
+  FormLayout
 } from '@/components/ui';
 
 type Interval = '1m' | '5m' | '15m' | '1h';
@@ -98,8 +98,18 @@ export default function MarketDataPage() {
           subtitle="实时K线数据查看与分析"
         />
         
-        <ControlBar>
-          <FormGrid colsSm={1} colsMd={2} colsLg={4}>
+        <FormLayout
+          actions={(
+            <Button 
+              variant="primary" 
+              onClick={loadData} 
+              disabled={loading}
+            >
+              {loading ? '加载中...' : '刷新数据'}
+            </Button>
+          )}
+        >
+          <FormGrid colsSm={1} md={2} lg={3}>
             <Input 
               label="交易对"
               value={symbol} 
@@ -119,18 +129,8 @@ export default function MarketDataPage() {
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
             />
-            <div className="flex items-end">
-              <Button 
-                variant="primary" 
-                onClick={loadData} 
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? '加载中...' : '刷新数据'}
-              </Button>
-            </div>
           </FormGrid>
-        </ControlBar>
+        </FormLayout>
         
         {error && (
           <ErrorBanner 

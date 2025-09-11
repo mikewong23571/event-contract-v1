@@ -7,10 +7,10 @@ import {
   Button, 
   Select, 
   PageHeader, 
-  ControlBar, 
   FormGrid, 
   ErrorBanner, 
-  SuccessNote 
+  SuccessNote, 
+  FormLayout
 } from '@/components/ui';
 
 type RiskParams = {
@@ -137,54 +137,8 @@ export default function RiskPage() {
 
         {params && (
           <div className="bg-white rounded-lg border p-6">
-            <FormGrid colsSm={1} colsMd={2} colsLg={3}>
-              <Input 
-                label="最大仓位大小"
-                type="number" 
-                value={params.max_position_size} 
-                onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} 
-                error={fieldErrors.max_position_size}
-              />
-              <Input 
-                label="最大日损失"
-                type="number" 
-                value={params.max_daily_loss} 
-                onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} 
-                error={fieldErrors.max_daily_loss}
-              />
-              <Input 
-                label="止损百分比 (%)"
-                type="number" 
-                step="0.01" 
-                value={params.stop_loss_percentage} 
-                onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} 
-                error={fieldErrors.stop_loss_percentage}
-              />
-              <Input 
-                label="止盈百分比 (%)"
-                type="number" 
-                step="0.01" 
-                value={params.take_profit_percentage} 
-                onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} 
-                error={fieldErrors.take_profit_percentage}
-              />
-              <Input 
-                label="最大并发交易数"
-                type="number" 
-                value={params.max_concurrent_trades} 
-                onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} 
-                error={fieldErrors.max_concurrent_trades}
-              />
-              <Select 
-                label="最小置信度"
-                options={confidenceOptions}
-                value={params.min_confidence_level}
-                onChange={(e) => setParams({ ...params, min_confidence_level: e.target.value as RiskParams['min_confidence_level'] })}
-              />
-            </FormGrid>
-            
-            <ControlBar className="mt-6">
-              <div className="flex justify-end">
+            <FormLayout
+              actions={(
                 <Button 
                   variant="primary" 
                   onClick={save} 
@@ -192,8 +146,54 @@ export default function RiskPage() {
                 >
                   {saving ? '保存中...' : '保存设置'}
                 </Button>
-              </div>
-            </ControlBar>
+              )}
+            >
+              <FormGrid colsSm={1} colsMd={2} colsLg={3}>
+                <Input 
+                  label="最大仓位大小"
+                  type="number" 
+                  value={params.max_position_size} 
+                  onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} 
+                  error={fieldErrors.max_position_size}
+                />
+                <Input 
+                  label="最大日损失"
+                  type="number" 
+                  value={params.max_daily_loss} 
+                  onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} 
+                  error={fieldErrors.max_daily_loss}
+                />
+                <Input 
+                  label="止损百分比 (%)"
+                  type="number" 
+                  step="0.01" 
+                  value={params.stop_loss_percentage} 
+                  onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} 
+                  error={fieldErrors.stop_loss_percentage}
+                />
+                <Input 
+                  label="止盈百分比 (%)"
+                  type="number" 
+                  step="0.01" 
+                  value={params.take_profit_percentage} 
+                  onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} 
+                  error={fieldErrors.take_profit_percentage}
+                />
+                <Input 
+                  label="最大并发交易数"
+                  type="number" 
+                  value={params.max_concurrent_trades} 
+                  onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} 
+                  error={fieldErrors.max_concurrent_trades}
+                />
+                <Select 
+                  label="最小置信度"
+                  options={confidenceOptions}
+                  value={params.min_confidence_level}
+                  onChange={(e) => setParams({ ...params, min_confidence_level: e.target.value as RiskParams['min_confidence_level'] })}
+                />
+              </FormGrid>
+            </FormLayout>
           </div>
         )}
       </div>

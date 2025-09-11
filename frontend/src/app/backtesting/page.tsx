@@ -10,11 +10,11 @@ import {
   Card, 
   CardContent, 
   PageHeader, 
-  ControlBar, 
   FormGrid, 
   ErrorBanner, 
   SuccessNote, 
-  StatusIndicator 
+  StatusIndicator, 
+  FormLayout
 } from '@/components/ui';
 
 type CreateResponse = { backtest_id: string; status: string; created_at: string };
@@ -131,7 +131,18 @@ export default function BacktestingPage() {
           subtitle="创建并监控回测任务的执行状态"
         />
         
-        <ControlBar>
+        <FormLayout
+          actions={(
+            <Button 
+              variant="primary" 
+              onClick={createBacktest} 
+              disabled={creating}
+              className="min-w-[120px]"
+            >
+              {creating ? '提交中...' : '创建回测'}
+            </Button>
+          )}
+        >
           <FormGrid colsSm={1} colsMd={2} colsLg={4}>
             <Input 
               label="策略名称"
@@ -162,18 +173,7 @@ export default function BacktestingPage() {
               error={fieldErrors.endDate}
             />
           </FormGrid>
-          
-          <div className="flex justify-end">
-            <Button 
-              variant="primary" 
-              onClick={createBacktest} 
-              disabled={creating}
-              className="min-w-[120px]"
-            >
-              {creating ? '提交中...' : '创建回测'}
-            </Button>
-          </div>
-        </ControlBar>
+        </FormLayout>
 
         {error && (
           <ErrorBanner 

@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef, useState } from 'react';
+import { InputHTMLAttributes, forwardRef, useState, useId } from 'react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fadeIn, slideIn, scaleIn } from '@/utils/animations';
@@ -37,7 +37,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     ...restProps 
   }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const reactId = useId();
+    const inputId = id || reactId;
     const actualVariant = error ? 'error' : variant;
     
     const baseClasses = 'input';

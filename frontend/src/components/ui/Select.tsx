@@ -1,4 +1,4 @@
-import { SelectHTMLAttributes, forwardRef, useState } from 'react';
+import { SelectHTMLAttributes, forwardRef, useState, useId } from 'react';
 import { clsx } from 'clsx';
 import { motion } from 'framer-motion';
 import { fadeIn } from '@/utils/animations';
@@ -35,7 +35,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     ...restProps 
   }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
-    const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+    const reactId = useId();
+    const selectId = id || reactId;
     const actualVariant = error ? 'error' : variant;
     
     const baseClasses = 'input appearance-none bg-white cursor-pointer';

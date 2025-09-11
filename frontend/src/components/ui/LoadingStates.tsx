@@ -87,7 +87,7 @@ export function ChartSkeleton({ className = '' }: { className?: string }) {
               key={i} 
               className="bg-gray-200 rounded-t" 
               style={{ 
-                height: `${Math.random() * 80 + 20}%`, 
+                height: `${[60, 80, 50, 70, 90, 40, 75, 65, 85, 55, 95, 45][i % 12]}%`, 
                 width: '6%' 
               }}
             ></div>

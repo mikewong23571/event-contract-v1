@@ -8,9 +8,9 @@ import {
   Input, 
   Button, 
   PageHeader, 
-  ControlBar, 
   FormGrid, 
-  ErrorBanner 
+  ErrorBanner, 
+  FormLayout
 } from '@/components/ui';
 
 type ApiSignal = {
@@ -100,21 +100,13 @@ export default function SignalsPage() {
           subtitle="生成和查看最新的交易信号"
         />
         
-        <ControlBar>
-          <FormGrid colsSm={1} colsMd={2} colsLg={3}>
-            <Input 
-              label="交易对"
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-              placeholder="BTCUSDT"
-              error={fieldErrors.symbol}
-            />
-            <div className="flex items-end gap-2">
+        <FormLayout
+          actions={(
+            <>
               <Button 
                 onClick={generateSignal} 
                 variant="primary" 
                 disabled={loading}
-                className="flex-1"
               >
                 {loading ? '生成中...' : '生成信号'}
               </Button>
@@ -122,13 +114,22 @@ export default function SignalsPage() {
                 onClick={fetchSignals} 
                 variant="secondary" 
                 disabled={loading}
-                className="flex-1"
               >
                 刷新
               </Button>
-            </div>
+            </>
+          )}
+        >
+          <FormGrid colsSm={1} md={1} lg={1}> 
+            <Input 
+              label="交易对"
+              value={symbol}
+              onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+              placeholder="BTCUSDT"
+              error={fieldErrors.symbol}
+            />
           </FormGrid>
-        </ControlBar>
+        </FormLayout>
         
         {error && (
           <ErrorBanner 

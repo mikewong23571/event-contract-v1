@@ -149,7 +149,7 @@
 - [x] **T100** [P] Performance tests for signal latency (<1s requirement)
 - [x] **T101** [P] Load tests for WebSocket connections
 - [x] **T102** [P] End-to-end tests for complete trading workflows
-- [ ] **T103** [P] Update API documentation in docs/api.md
+- [x] **T103** [P] Update API documentation in docs/api.md
 - [ ] **T104** [P] Update library documentation in llms.txt format
 - [ ] **T105** Code quality improvements and duplication removal
 

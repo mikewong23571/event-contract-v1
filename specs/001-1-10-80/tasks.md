@@ -143,7 +143,7 @@
 
 ## Phase 3.16: Testing & Polish
 - [x] **T096** [P] Unit tests for probability calculations in backend/tests/unit/test_probability.py
-- [ ] **T097** [P] Unit tests for risk validation in backend/tests/unit/test_risk_validation.py
+- [x] **T097** [P] Unit tests for risk validation in backend/tests/unit/test_risk_validation.py
 - [ ] **T098** [P] Unit tests for signal generation in backend/tests/unit/test_signal_generation.py
 - [ ] **T099** [P] Frontend component tests in frontend/tests/components/
 - [ ] **T100** [P] Performance tests for signal latency (<1s requirement)

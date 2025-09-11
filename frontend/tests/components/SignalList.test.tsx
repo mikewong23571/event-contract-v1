@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { SignalList, TradingSignal } from '../../src/components/signals/SignalList';
+import { SignalList } from '../../src/components/signals/SignalList';
+import { TradingSignal } from '../../src/components/signals/SignalCard';
 
 function makeSignal(id: string, symbol: string, prob: number): TradingSignal {
   const now = new Date();

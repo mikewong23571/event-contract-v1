@@ -32,22 +32,22 @@ const pageVariants = {
 
 const pageTransitions = {
   fade: {
-    type: 'tween',
+    type: 'tween' as const,
     duration: 0.3,
-    ease: 'easeInOut',
+    ease: 'easeInOut' as const,
   },
   slide: {
-    type: 'spring',
+    type: 'spring' as const,
     stiffness: 300,
     damping: 30,
   },
   slideUp: {
-    type: 'spring',
+    type: 'spring' as const,
     stiffness: 400,
     damping: 25,
   },
   scale: {
-    type: 'spring',
+    type: 'spring' as const,
     stiffness: 300,
     damping: 30,
   },

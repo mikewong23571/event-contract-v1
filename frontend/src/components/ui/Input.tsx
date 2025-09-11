@@ -72,8 +72,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const InputComponent = animated ? motion.input : 'input';
     const motionProps = animated ? {
-      whileFocus: { scale: 1.02 },
-      transition: { type: 'spring', stiffness: 300, damping: 30 }
+      whileFocused: { scale: 1.02 },
+      transition: { type: 'spring' as const, stiffness: 300, damping: 30 }
     } : {};
 
     return (

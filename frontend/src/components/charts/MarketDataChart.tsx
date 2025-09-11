@@ -188,7 +188,7 @@ export function MarketDataChart({
       {showMetrics && metrics.length > 0 && (
         <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           {metrics.map((metric, index) => (
-            <ChartMetricCard key={index} {...metric} />
+            <ChartMetricCard key={index} metric={metric} />
           ))}
         </div>
       )}
@@ -198,20 +198,22 @@ export function MarketDataChart({
         title={`${symbol} 价格走势`}
         height={height}
         loading={loading}
-        showTimeSelector={true}
         timeRanges={timeRanges}
         onTimeRangeChange={handleTimeRangeChange}
-        config={{
-          dataKey: 'value',
-          color: '#3b82f6',
-          strokeWidth: 2,
-          showDots: false,
-          showArea: false,
-          showGrid: true,
-          showTooltip: true,
-          showLegend: false,
-          animate: true,
-        }}
+        lines={[
+          {
+            dataKey: 'value',
+            name: '价格',
+            color: '#3b82f6',
+            strokeWidth: 2,
+            dot: false,
+            activeDot: true,
+          }
+        ]}
+        showGrid={true}
+        showTooltip={true}
+        showLegend={false}
+        animate={true}
       />
     </div>
   );

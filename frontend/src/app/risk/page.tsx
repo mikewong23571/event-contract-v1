@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
-import { Input, Button, Card } from '@/components/ui';
+import { 
+  Input, 
+  Button, 
+  Select, 
+  PageHeader, 
+  ControlBar, 
+  FormGrid, 
+  ErrorBanner, 
+  SuccessNote 
+} from '@/components/ui';
 
 type RiskParams = {
   max_position_size: number;
@@ -18,6 +27,38 @@ export default function RiskPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  
+  // Form validation
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    
+    if (!params) return false;
+    
+    if (params.max_position_size <= 0) {
+      errors.max_position_size = '最大仓位必须大于0';
+    }
+    
+    if (params.stop_loss_percentage <= 0 || params.stop_loss_percentage >= 100) {
+      errors.stop_loss_percentage = '止损百分比必须在0-100之间';
+    }
+    
+    if (params.take_profit_percentage <= 0) {
+      errors.take_profit_percentage = '止盈百分比必须大于0';
+    }
+    
+    if (params.max_daily_loss <= 0) {
+      errors.max_daily_loss = '最大日损失必须大于0';
+    }
+    
+    if (params.max_concurrent_trades <= 0) {
+      errors.max_concurrent_trades = '最大并发交易数必须大于0';
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const load = async () => {
     setError(null);
@@ -34,12 +75,16 @@ export default function RiskPage() {
         min_confidence_level: data.min_confidence_level,
       });
     } catch (e: any) {
-      setError(e.message ?? 'Failed to load risk parameters');
+      setError(e.message ?? '加载风险参数失败');
     }
   };
 
   const save = async () => {
-    if (!params) return;
+    if (!params || !validateForm()) {
+      setError('请检查输入参数');
+      return;
+    }
+    
     setSaving(true);
     setSaved(false);
     setError(null);
@@ -51,62 +96,105 @@ export default function RiskPage() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e: any) {
-      setError(e.message ?? 'Failed to save');
+      setError(e.message ?? '保存失败');
     } finally {
       setSaving(false);
     }
   };
+  
+  // Confidence level options
+  const confidenceOptions = [
+    { value: 'LOW', label: '低' },
+    { value: 'MEDIUM', label: '中' },
+    { value: 'HIGH', label: '高' },
+  ];
 
   useEffect(() => { load(); }, []);
 
   return (
     <Dashboard currentPage="Risk Management">
       <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">Risk Parameters</h2>
-          <p className="text-sm text-gray-500">Tune risk settings used by runtime and backtests</p>
-        </div>
-
-        {error && <Card variant="outlined" className="border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</Card>}
+        <PageHeader 
+          title="风险管理" 
+          subtitle="调整运行时和回测使用的风险设置"
+        />
+        
+        {error && (
+          <ErrorBanner 
+            message={error} 
+            onClose={() => setError(null)}
+          />
+        )}
+        
+        {saved && (
+          <SuccessNote 
+            message="风险参数已成功保存"
+            durationMs={3000}
+          />
+        )}
 
         {params && (
-          <Card className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Max Position Size</span>
-                <Input type="number" value={params.max_position_size} onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} />
-              </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Max Daily Loss</span>
-                <Input type="number" value={params.max_daily_loss} onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} />
-              </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Stop Loss %</span>
-                <Input type="number" step="0.01" value={params.stop_loss_percentage} onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} />
-              </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Take Profit %</span>
-                <Input type="number" step="0.01" value={params.take_profit_percentage} onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} />
-              </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Max Concurrent Trades</span>
-                <Input type="number" value={params.max_concurrent_trades} onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} />
-              </label>
-              <label className="space-y-1">
-                <span className="text-sm text-gray-600">Min Confidence</span>
-                <select className="input" value={params.min_confidence_level} onChange={(e) => setParams({ ...params, min_confidence_level: e.target.value as any })}>
-                  <option value="LOW">LOW</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="HIGH">HIGH</option>
-                </select>
-              </label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
-              {saved && <span className="text-sm text-green-600">Saved!</span>}
-            </div>
-          </Card>
+          <div className="bg-white rounded-lg border p-6">
+            <FormGrid colsSm={1} colsMd={2} colsLg={3}>
+              <Input 
+                label="最大仓位大小"
+                type="number" 
+                value={params.max_position_size} 
+                onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} 
+                error={fieldErrors.max_position_size}
+              />
+              <Input 
+                label="最大日损失"
+                type="number" 
+                value={params.max_daily_loss} 
+                onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} 
+                error={fieldErrors.max_daily_loss}
+              />
+              <Input 
+                label="止损百分比 (%)"
+                type="number" 
+                step="0.01" 
+                value={params.stop_loss_percentage} 
+                onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} 
+                error={fieldErrors.stop_loss_percentage}
+              />
+              <Input 
+                label="止盈百分比 (%)"
+                type="number" 
+                step="0.01" 
+                value={params.take_profit_percentage} 
+                onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} 
+                error={fieldErrors.take_profit_percentage}
+              />
+              <Input 
+                label="最大并发交易数"
+                type="number" 
+                value={params.max_concurrent_trades} 
+                onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} 
+                error={fieldErrors.max_concurrent_trades}
+              />
+              <Select 
+                label="最小置信度"
+                options={confidenceOptions}
+                value={params.min_confidence_level}
+                onChange={(e) => setParams({ ...params, min_confidence_level: e.target.value as RiskParams['min_confidence_level'] })}
+              />
+            </FormGrid>
+            
+            <ControlBar className="mt-6">
+              <div className="flex justify-end">
+                <Button 
+                  variant="primary" 
+                  onClick={save} 
+                  disabled={saving}
+                >
+                  {saving ? '保存中...' : '保存设置'}
+                </Button>
+              </div>
+            </ControlBar>
+          </div>
         )}
       </div>
     </Dashboard>

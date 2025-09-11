@@ -1,0 +1,6 @@
+backend: cd backend && uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+# Force Next.js to use a stable dev port to avoid Honcho's PORT assignment
+# colliding with something already bound on the system.
+frontend: cd frontend && PORT=3000 npm run dev
+runtime: cd runtime && uv run -m src.main
+notifications: cd notifications && uv run -m src.main

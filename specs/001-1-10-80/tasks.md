@@ -97,16 +97,16 @@
 - [x] **T064** [P] API client service in frontend/src/services/api.ts
 
 ## Phase 3.9: Runtime Engine Components
-- [ ] **T065** [P] Real-time market data processor in runtime/src/processors/market_data_processor.py
-- [ ] **T066** [P] Signal detection engine in runtime/src/engines/signal_detector.py
-- [ ] **T067** [P] Probability calculator in runtime/src/calculators/probability_calculator.py
+- [x] **T065** [P] Real-time market data processor in runtime/src/processors/market_data_processor.py
+- [x] **T066** [P] Signal detection engine in runtime/src/engines/signal_detector.py
+- [x] **T067** [P] Probability calculator in runtime/src/calculators/probability_calculator.py
 - [x] **T068** Binance WebSocket client in runtime/src/clients/binance_client.py
 
 ## Phase 3.10: Backtesting Engine Components
 - [x] **T069** [P] Historical data loader in backtesting/src/loaders/data_loader.py
 - [x] **T070** [P] Strategy simulator in backtesting/src/simulators/strategy_simulator.py
 - [x] **T071** [P] Performance analyzer in backtesting/src/analyzers/performance_analyzer.py
-- [ ] **T072** Backtest report generator in backtesting/src/generators/report_generator.py
+- [x] **T072** Backtest report generator in backtesting/src/generators/report_generator.py
 
 ## Phase 3.11: Notifications Components
 - [x] **T073** [P] Telegram notification client in notifications/src/clients/telegram_client.py

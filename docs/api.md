@@ -5,29 +5,29 @@ Version: 0.1.0
 Base URL: `/api/v1`
 
 ## Health
-- GET `/api/v1/health` → `{ status, uptime_seconds, timestamp }`
+- GET `/api/v1/health` → `{ status, checks, timestamp }`
 
 ## Signals
 - GET `/api/v1/signals`
-  - Query: `symbol?`, `limit?`
-  - 200: `[{ id, timestamp, symbol, direction, predicted_probability, confidence_level, expiry_time, strategy_version }]`
+  - Query: `symbol?`, `confidence? (LOW|MEDIUM|HIGH)`, `limit? (1..100)`, `since? (ISO-8601)`
+  - 200: `{ signals: [], total_count: number, has_more: boolean }`
 
 - POST `/api/v1/signals/generate`
-  - Body: `{ symbol: string, expiry_minutes?: number }`
-  - 200: `{ signal_id, symbol, direction, predicted_probability, confidence_level, expiry_time }`
+  - Body: `{ symbol: string, force_calculation?: boolean }`
+  - 201: TradingSignal JSON `{ id, timestamp, symbol, direction, predicted_probability, confidence_level, expiry_time, ... }`
 
-### WebSocket: `/ws/signals`
-- Subscribes to live signal events
-- Message schema: `{ id, symbol, direction, predicted_probability, confidence_level, expiry_time }`
+### WebSocket: `/ws/signals/{symbol}`
+- Subscribes to live signal events for a symbol (pattern: `^[A-Z]{3,}USDT$`)
+- Message schema (when used): `{ id, symbol, direction, predicted_probability, confidence_level, expiry_time }`
 
 ## Market Data
-- GET `/api/v1/market-data`
-  - Query: `symbol`, `start_time?`, `end_time?`, `limit?`
-  - 200: `[{ timestamp, open_price, high_price, low_price, close_price, volume, source }]`
+- GET `/api/v1/market-data/{symbol}`
+  - Query: `interval (1m|5m|15m|1h)`, `limit (1..1000)`
+  - 200: `{ symbol, interval, data: [{ timestamp, open_price, high_price, low_price, close_price, volume, quote_volume?, trade_count? }] }`
 
 - POST `/api/v1/market-data/stream`
-  - Body: `{ symbol: string, action: "start" | "stop" }`
-  - 202: `{ status, symbol }`
+  - Body: `{ symbol: string, interval?: "1m"|"5m"|"15m"|"1h", client_id?: string }`
+  - 201: `{ stream_id, symbol, status }`
 
 ### WebSocket: `/ws/market-data`
 - Subscribes to live market data updates
@@ -38,16 +38,16 @@ Base URL: `/api/v1`
   - 200: `{ user_id, max_bet_size, max_daily_bets, max_parallel_positions, min_probability_edge, frequency_limit_minutes, max_daily_loss }`
 
 - PUT `/api/v1/risk-parameters`
-  - Body: same as above
+  - Body: Partial update of the same fields
   - 200: Updated object
 
 ## Backtests
 - POST `/api/v1/backtests`
-  - Body: `{ strategy_name, market_data: [...], strategy_params: {...} }`
-  - 202: `{ id, status }`
+  - Body: `{ strategy_name: string, start_date: YYYY-MM-DD, end_date: YYYY-MM-DD, symbol: string, initial_balance?: number|string }`
+  - 202: `{ backtest_id, status (PENDING|RUNNING|QUEUED), created_at }`
 
 - GET `/api/v1/backtests/{id}`
-  - 200: `{ id, strategy_name, total_signals, win_rate, total_profit_loss, created_at, trades: [...], metrics: {...} }`
+  - 200: `{ backtest_id, status, strategy_name, results: { total_trades, win_rate, total_return }, summary }`
 
 ### WebSocket: `/ws/alerts`
 - Subscribes to system or risk alerts
@@ -60,4 +60,3 @@ Base URL: `/api/v1`
 - All timestamps use ISO 8601 (UTC).
 - Numeric types may be serialized as strings where precision matters (e.g., Decimal).
 - See contract tests in `backend/tests/contract/` for precise schema expectations.
-

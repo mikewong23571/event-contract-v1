@@ -19,9 +19,19 @@ class TestGetBacktestsContract:
 
     def test_get_backtests_success_response(self):
         """Test successful backtest retrieval response structure"""
-        # Using a sample UUID for the test
-        test_id = str(uuid.uuid4())
-        
+        # Create a backtest first to obtain a valid ID
+        create_resp = client.post(
+            "/api/v1/backtests",
+            json={
+                "strategy_name": "ensemble_v1",
+                "start_date": "2024-01-01",
+                "end_date": "2024-01-31",
+                "symbol": "BTCUSDT",
+            },
+        )
+        assert create_resp.status_code == 202
+        test_id = create_resp.json()["backtest_id"]
+
         response = client.get(f"/api/v1/backtests/{test_id}")
         
         # Contract: Should return 200 OK when backtest exists
@@ -39,8 +49,19 @@ class TestGetBacktestsContract:
 
     def test_get_backtests_completed_result_schema(self):
         """Test completed backtest result schema"""
-        test_id = str(uuid.uuid4())
-        
+        # Create a backtest first to obtain a valid ID
+        create_resp = client.post(
+            "/api/v1/backtests",
+            json={
+                "strategy_name": "ensemble_v1",
+                "start_date": "2024-01-01",
+                "end_date": "2024-01-31",
+                "symbol": "BTCUSDT",
+            },
+        )
+        assert create_resp.status_code == 202
+        test_id = create_resp.json()["backtest_id"]
+
         response = client.get(f"/api/v1/backtests/{test_id}")
         assert response.status_code == 200
         

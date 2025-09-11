@@ -5,7 +5,7 @@ Notifications service configuration settings.
 from functools import lru_cache
 from typing import List, Optional
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, validator
 from pydantic_settings import BaseSettings
 
 
@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     
     # Telegram Bot settings
     telegram_bot_token: Optional[SecretStr] = Field(None, env="TELEGRAM_BOT_TOKEN")
-    telegram_chat_ids: List[str] = Field([], env="TELEGRAM_CHAT_IDS")
+    telegram_chat_ids: str = Field("", env="TELEGRAM_CHAT_IDS")
     telegram_enabled: bool = Field(False, env="TELEGRAM_ENABLED")
     
     # Feishu (Lark) settings
@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     smtp_password: Optional[SecretStr] = Field(None, env="SMTP_PASSWORD")
     smtp_use_tls: bool = Field(True, env="SMTP_USE_TLS")
     smtp_from_email: Optional[str] = Field(None, env="SMTP_FROM_EMAIL")
-    email_recipients: List[str] = Field([], env="EMAIL_RECIPIENTS")
+    email_recipients: str = Field("", env="EMAIL_RECIPIENTS")
     email_enabled: bool = Field(False, env="EMAIL_ENABLED")
     
     # Notification settings
@@ -81,6 +81,24 @@ class Settings(BaseSettings):
     def smtp_password_str(self) -> Optional[str]:
         """Get SMTP password as string."""
         return self.smtp_password.get_secret_value() if self.smtp_password else None
+    
+    def get_telegram_chat_ids_list(self) -> List[str]:
+        """Parse telegram chat IDs from string to list."""
+        if isinstance(self.telegram_chat_ids, str) and self.telegram_chat_ids.strip():
+            if ',' in self.telegram_chat_ids:
+                return [s.strip() for s in self.telegram_chat_ids.split(",") if s.strip()]
+            else:
+                return [self.telegram_chat_ids.strip()]
+        return []
+    
+    def get_email_recipients_list(self) -> List[str]:
+        """Parse email recipients from string to list."""
+        if isinstance(self.email_recipients, str) and self.email_recipients.strip():
+            if ',' in self.email_recipients:
+                return [s.strip() for s in self.email_recipients.split(",") if s.strip()]
+            else:
+                return [self.email_recipients.strip()]
+        return []
     
     class Config:
         env_file = ".env"

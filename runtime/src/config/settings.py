@@ -3,7 +3,7 @@ Runtime engine configuration settings.
 """
 
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings
@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     websocket_path: str = Field("/ws/runtime", env="WEBSOCKET_PATH")
 
     # Trading symbols to monitor
-    trading_symbols: List[str] = Field(["BTCUSDT", "ETHUSDT"], env="TRADING_SYMBOLS")
+    trading_symbols: str = Field("BTCUSDT,ETHUSDT", env="TRADING_SYMBOLS")
 
     # Signal detection settings
     signal_interval: float = Field(1.0, env="SIGNAL_INTERVAL")  # seconds
@@ -45,11 +45,16 @@ class Settings(BaseSettings):
     log_level: str = Field("INFO", env="LOG_LEVEL")
     log_format: str = Field("json", env="LOG_FORMAT")
 
-    @validator("trading_symbols", pre=True)
-    def parse_trading_symbols(cls, v):
-        if isinstance(v, str):
-            return [s.strip() for s in v.split(",")]
-        return v
+    def get_trading_symbols_list(self) -> List[str]:
+        """Parse trading symbols from string to list."""
+        if isinstance(self.trading_symbols, str):
+            if ',' in self.trading_symbols:
+                return [s.strip() for s in self.trading_symbols.split(",") if s.strip()]
+            elif self.trading_symbols.strip():
+                return [self.trading_symbols.strip()]
+            else:
+                return ["BTCUSDT", "ETHUSDT"]  # default fallback
+        return ["BTCUSDT", "ETHUSDT"]
 
     @validator("min_confidence")
     def validate_confidence(cls, v):

@@ -142,7 +142,7 @@
 - [x] **T095** Structured logging setup across all components
 
 ## Phase 3.16: Testing & Polish
-- [ ] **T096** [P] Unit tests for probability calculations in backend/tests/unit/test_probability.py
+- [x] **T096** [P] Unit tests for probability calculations in backend/tests/unit/test_probability.py
 - [ ] **T097** [P] Unit tests for risk validation in backend/tests/unit/test_risk_validation.py
 - [ ] **T098** [P] Unit tests for signal generation in backend/tests/unit/test_signal_generation.py
 - [ ] **T099** [P] Frontend component tests in frontend/tests/components/

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
+import { Button, Card } from '@/components/ui';
 
 type Alert = {
   id: string;
@@ -106,12 +107,12 @@ export default function AlertsPage() {
             {connected ? 'Connected' : 'Disconnected'}
           </span>
         </div>
-        <button onClick={connectWebSocket} className="btn btn-secondary" disabled={connected}>
+        <Button variant="secondary" onClick={connectWebSocket} disabled={connected}>
           Reconnect
-        </button>
-        <button onClick={clearAlerts} className="btn btn-secondary">
+        </Button>
+        <Button variant="secondary" onClick={clearAlerts}>
           Clear Alerts
-        </button>
+        </Button>
       </div>
     </div>
   ), [connected]);
@@ -121,9 +122,9 @@ export default function AlertsPage() {
       <div className="space-y-6">
         {header}
         {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <Card variant="outlined" className="border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
-          </div>
+          </Card>
         )}
         
         <div className="space-y-3">
@@ -139,9 +140,9 @@ export default function AlertsPage() {
             </div>
           ) : (
             alerts.map((alert) => (
-              <div
+              <Card
                 key={alert.id}
-                className={`rounded-lg border p-4 ${getSeverityColor(alert.severity)}`}
+                className={`${getSeverityColor(alert.severity)}`}
               >
                 <div className="flex items-start gap-3">
                   <div className="text-xl">
@@ -177,7 +178,7 @@ export default function AlertsPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </Card>
             ))
           )}
         </div>

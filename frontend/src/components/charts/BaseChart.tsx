@@ -155,10 +155,15 @@ export const ChartMetricCard: React.FC<{
   metric: ChartMetric;
   className?: string;
 }> = ({ metric, className }) => {
+  // 防止 metric 为 undefined 的情况
+  if (!metric) {
+    return null;
+  }
+
   return (
     <div className={cn('chart-metric-card', className)}>
-      <div className="chart-metric-value">{metric.value}</div>
-      <div className="chart-metric-label">{metric.label}</div>
+      <div className="chart-metric-value">{metric.value ?? '--'}</div>
+      <div className="chart-metric-label">{metric.label ?? ''}</div>
       {metric.change && (
         <div className={cn(
           'chart-metric-change',

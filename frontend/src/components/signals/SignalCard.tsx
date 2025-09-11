@@ -1,13 +1,14 @@
-/* Using the automatic JSX runtime; no explicit React import required. */
+'use client';
+
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui';
+import { fadeIn } from '@/utils/animations';
+import { clsx } from 'clsx';
 
 /**
  * SignalCard
  * Presentational component that renders a single trading signal in a card layout.
- * Scope: Display-only. This component does not fetch data or manage WebSocket connections.
- *
- * Notes:
- * - Styling follows TailwindCSS conventions used in the project.
- * - Time values are displayed using the user's locale via toLocaleString().
+ * Uses project's design system components for consistency.
  */
 
 export type Direction = 'UP' | 'DOWN';
@@ -26,17 +27,23 @@ export interface TradingSignal {
 export interface SignalCardProps {
   signal: TradingSignal;
   className?: string;
+  interactive?: boolean;
 }
 
 const confidenceColors: Record<ConfidenceLevel, string> = {
-  LOW: 'bg-yellow-100 text-yellow-800 ring-yellow-600/20',
-  MEDIUM: 'bg-blue-100 text-blue-800 ring-blue-600/20',
-  HIGH: 'bg-green-100 text-green-800 ring-green-600/20',
+  LOW: 'badge-warning',
+  MEDIUM: 'badge-secondary',
+  HIGH: 'badge-success',
 };
 
 const directionColors: Record<Direction, string> = {
-  UP: 'text-green-600',
-  DOWN: 'text-red-600',
+  UP: 'text-success-600',
+  DOWN: 'text-danger-600',
+};
+
+const directionIcons: Record<Direction, string> = {
+  UP: '↗',
+  DOWN: '↘',
 };
 
 function formatPercent(n: number): string {
@@ -54,63 +61,74 @@ function formatDate(iso: string): string {
   }
 }
 
-export function SignalCard({ signal, className }: SignalCardProps) {
+export function SignalCard({ signal, className, interactive = false }: SignalCardProps) {
   const s = signal;
 
   return (
-    <article
-      className={[
-        'rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      aria-label={`Trading signal for ${s.symbol}`}
+    <motion.div
+      variants={fadeIn}
+      initial="initial"
+      animate="animate"
+      className={className}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div
-            className={`text-sm font-medium ${directionColors[s.direction]}`}
-            aria-label={`Direction ${s.direction}`}
-            title={`Direction ${s.direction}`}
-          >
-            {s.direction === 'UP' ? '↑ UP' : '↓ DOWN'}
+      <Card 
+        variant="default" 
+        hover={interactive}
+        interactive={interactive}
+        className="transition-all duration-200"
+        aria-label={`Trading signal for ${s.symbol}`}
+      >
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div
+                className={clsx(
+                  'flex items-center gap-1 text-sm font-medium',
+                  directionColors[s.direction]
+                )}
+                aria-label={`Direction ${s.direction}`}
+                title={`Direction ${s.direction}`}
+              >
+                <span className="text-lg">{directionIcons[s.direction]}</span>
+                {s.direction}
+              </div>
+              <h3 className="text-base font-semibold text-foreground" title="Symbol">
+                {s.symbol}
+              </h3>
+              <span
+                className={clsx('badge', confidenceColors[s.confidence_level])}
+                title="Confidence Level"
+              >
+                {s.confidence_level}
+              </span>
+            </div>
+
+            <div className="text-xs text-muted-foreground" title="Signal ID">
+              #{s.id.slice(-8)}
+            </div>
           </div>
-          <h3 className="text-base font-semibold text-gray-900" title="Symbol">
-            {s.symbol}
-          </h3>
-          <span
-            className={`inline-flex items-center rounded-md px-2 py-1 text-xs ring-1 ring-inset ${confidenceColors[s.confidence_level]}`}
-            title="Confidence Level"
-          >
-            {s.confidence_level}
-          </span>
-        </div>
 
-        <div className="text-xs text-gray-500" title="Signal ID">
-          #{s.id}
-        </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="flex items-center gap-2" title="Predicted Probability">
-          <span className="text-gray-500">Probability</span>
-          <span className="font-medium text-gray-900">{formatPercent(s.predicted_probability)}</span>
-        </div>
-        <div className="flex items-center gap-2" title="Timestamp">
-          <span className="text-gray-500">Time</span>
-          <time className="font-medium text-gray-900" dateTime={s.timestamp}>
-            {formatDate(s.timestamp)}
-          </time>
-        </div>
-        <div className="flex items-center gap-2" title="Expiry">
-          <span className="text-gray-500">Expires</span>
-          <time className="font-medium text-gray-900" dateTime={s.expiry_time}>
-            {formatDate(s.expiry_time)}
-          </time>
-        </div>
-      </div>
-    </article>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="flex items-center gap-2" title="Predicted Probability">
+              <span className="text-muted-foreground text-sm">概率</span>
+              <span className="font-medium text-foreground">{formatPercent(s.predicted_probability)}</span>
+            </div>
+            <div className="flex items-center gap-2" title="Timestamp">
+              <span className="text-muted-foreground text-sm">时间</span>
+              <time className="font-medium text-foreground text-sm" dateTime={s.timestamp}>
+                {formatDate(s.timestamp)}
+              </time>
+            </div>
+            <div className="flex items-center gap-2" title="Expiry">
+              <span className="text-muted-foreground text-sm">到期</span>
+              <time className="font-medium text-foreground text-sm" dateTime={s.expiry_time}>
+                {formatDate(s.expiry_time)}
+              </time>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 

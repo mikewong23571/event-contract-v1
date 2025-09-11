@@ -1,38 +1,38 @@
-/* Using the automatic JSX runtime; no explicit React import required. */
+'use client';
+
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui';
+import { staggerContainer, staggerItem } from '@/utils/animations';
+import { clsx } from 'clsx';
+import { SignalCard, TradingSignal } from './SignalCard';
 
 /**
  * SignalList
  * Presentational component that renders a list of trading signals.
- * Scope: Display-only. This component does not fetch data or manage WebSocket connections.
+ * Uses project's design system components and animations for consistency.
  */
-
-export type Direction = 'UP' | 'DOWN';
-export type ConfidenceLevel = 'LOW' | 'MEDIUM' | 'HIGH';
-
-export interface TradingSignal {
-  id: string;
-  timestamp: string; // ISO 8601
-  symbol: string;
-  direction: Direction;
-  predicted_probability: number; // 0.0 - 1.0
-  confidence_level: ConfidenceLevel;
-  expiry_time: string; // ISO 8601
-}
 
 export interface SignalListProps {
   signals: TradingSignal[];
   className?: string;
+  variant?: 'card' | 'list';
+  loading?: boolean;
 }
 
-const confidenceColors: Record<ConfidenceLevel, string> = {
-  LOW: 'bg-yellow-100 text-yellow-800 ring-yellow-600/20',
-  MEDIUM: 'bg-blue-100 text-blue-800 ring-blue-600/20',
-  HIGH: 'bg-green-100 text-green-800 ring-green-600/20',
+const confidenceColors: Record<'LOW' | 'MEDIUM' | 'HIGH', string> = {
+  LOW: 'badge-warning',
+  MEDIUM: 'badge-secondary',
+  HIGH: 'badge-success',
 };
 
-const directionColors: Record<Direction, string> = {
-  UP: 'text-green-600',
-  DOWN: 'text-red-600',
+const directionColors: Record<'UP' | 'DOWN', string> = {
+  UP: 'text-success-600',
+  DOWN: 'text-danger-600',
+};
+
+const directionIcons: Record<'UP' | 'DOWN', string> = {
+  UP: '↗',
+  DOWN: '↘',
 };
 
 function formatPercent(n: number): string {
@@ -50,57 +50,121 @@ function formatDate(iso: string): string {
   }
 }
 
-export function SignalList({ signals, className }: SignalListProps) {
-  return (
-    <div className={['w-full', className].filter(Boolean).join(' ')}>
-      <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
-        {signals.map((s: TradingSignal) => (
-          <li key={s.id} className="p-4 sm:p-5">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`text-sm font-medium ${directionColors[s.direction]}`}
-                  aria-label={`Direction ${s.direction}`}
-                  title={`Direction ${s.direction}`}
-                >
-                  {s.direction === 'UP' ? '↑ UP' : '↓ DOWN'}
-                </div>
-                <div className="text-sm font-semibold text-gray-900" title="Symbol">
-                  {s.symbol}
-                </div>
-                <span
-                  className={`inline-flex items-center rounded-md px-2 py-1 text-xs ring-1 ring-inset ${confidenceColors[s.confidence_level]}`}
-                  title="Confidence Level"
-                >
-                  {s.confidence_level}
-                </span>
-              </div>
+export function SignalList({ 
+  signals, 
+  className, 
+  variant = 'list',
+  loading = false 
+}: SignalListProps) {
+  if (loading) {
+    return (
+      <div className={clsx('w-full', className)}>
+        <Card className="p-6">
+          <div className="flex items-center justify-center">
+            <div className="loading-spinner" />
+            <span className="ml-2 text-muted-foreground">加载信号中...</span>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-                <div className="flex items-center gap-1" title="Predicted Probability">
-                  <span className="text-gray-500">Prob:</span>
-                  <span className="font-medium text-gray-900">{formatPercent(s.predicted_probability)}</span>
-                </div>
-                <div className="flex items-center gap-1" title="Timestamp">
-                  <span className="text-gray-500">Time:</span>
-                  <time className="font-medium text-gray-900" dateTime={s.timestamp}>
-                    {formatDate(s.timestamp)}
-                  </time>
-                </div>
-                <div className="flex items-center gap-1" title="Expiry">
-                  <span className="text-gray-500">Expires:</span>
-                  <time className="font-medium text-gray-900" dateTime={s.expiry_time}>
-                    {formatDate(s.expiry_time)}
-                  </time>
-                </div>
-              </div>
+  if (signals.length === 0) {
+    return (
+      <div className={clsx('w-full', className)}>
+        <Card className="p-8">
+          <div className="text-center">
+            <div className="mb-4 text-muted-foreground">
+              <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
-          </li>
+            <h3 className="text-lg font-medium text-foreground mb-2">暂无信号</h3>
+            <p className="text-muted-foreground">当前没有可显示的交易信号，请稍后再试或生成新信号。</p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (variant === 'card') {
+    return (
+      <motion.div 
+        className={clsx('w-full grid gap-4 md:grid-cols-2 lg:grid-cols-3', className)}
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
+        {signals.map((signal) => (
+          <motion.div key={signal.id} variants={staggerItem}>
+            <SignalCard signal={signal} interactive />
+          </motion.div>
         ))}
-        {signals.length === 0 && (
-          <li className="p-6 text-center text-sm text-gray-500">No signals to display.</li>
-        )}
-      </ul>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className={clsx('w-full', className)}>
+      <Card className="overflow-hidden">
+        <motion.div 
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          <div className="divide-y divide-border">
+            {signals.map((s: TradingSignal) => (
+              <motion.div key={s.id} variants={staggerItem}>
+                <div className="p-4 sm:p-5 hover:bg-muted/50 transition-colors">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={clsx(
+                          'flex items-center gap-1 text-sm font-medium',
+                          directionColors[s.direction]
+                        )}
+                        aria-label={`Direction ${s.direction}`}
+                        title={`Direction ${s.direction}`}
+                      >
+                        <span className="text-base">{directionIcons[s.direction]}</span>
+                        {s.direction}
+                      </div>
+                      <div className="text-sm font-semibold text-foreground" title="Symbol">
+                        {s.symbol}
+                      </div>
+                      <span
+                        className={clsx('badge', confidenceColors[s.confidence_level])}
+                        title="Confidence Level"
+                      >
+                        {s.confidence_level}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                      <div className="flex items-center gap-1" title="Predicted Probability">
+                        <span className="text-muted-foreground">概率:</span>
+                        <span className="font-medium text-foreground">{formatPercent(s.predicted_probability)}</span>
+                      </div>
+                      <div className="flex items-center gap-1" title="Timestamp">
+                        <span className="text-muted-foreground">时间:</span>
+                        <time className="font-medium text-foreground" dateTime={s.timestamp}>
+                          {formatDate(s.timestamp)}
+                        </time>
+                      </div>
+                      <div className="flex items-center gap-1" title="Expiry">
+                        <span className="text-muted-foreground">到期:</span>
+                        <time className="font-medium text-foreground" dateTime={s.expiry_time}>
+                          {formatDate(s.expiry_time)}
+                        </time>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </Card>
     </div>
   );
 }

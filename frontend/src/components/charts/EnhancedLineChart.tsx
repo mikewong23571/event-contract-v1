@@ -32,7 +32,7 @@ export interface LineConfig {
 
 export interface EnhancedLineChartProps {
   data: LineChartDataPoint[];
-  lines: LineConfig[];
+  lines?: LineConfig[];
   title?: string;
   subtitle?: string;
   className?: string;
@@ -181,7 +181,7 @@ const EnhancedLineChart: React.FC<EnhancedLineChartProps> = ({
               label={referenceLine.label}
             />
           )}
-          {lines.map((line, index) => (
+          {lines && Array.isArray(lines) && lines.map((line, index) => (
             <Line
               key={line.dataKey}
               type="monotone"

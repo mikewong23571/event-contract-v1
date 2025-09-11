@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
 import { usePerformanceStore } from '../../stores/performanceStore';
 
 interface WebVitalsMetric {
@@ -60,11 +60,11 @@ const WebVitalsMonitor: React.FC<WebVitalsMonitorProps> = ({
     };
 
     // Initialize Web Vitals monitoring
-    getCLS(handleMetric);
-    getFID(handleMetric);
-    getFCP(handleMetric);
-    getLCP(handleMetric);
-    getTTFB(handleMetric);
+    onCLS(handleMetric);
+    onINP(handleMetric); // INP replaced FID in web-vitals v4+
+    onFCP(handleMetric);
+    onLCP(handleMetric);
+    onTTFB(handleMetric);
 
     // Monitor memory usage periodically
     const memoryInterval = setInterval(() => {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
+import { Input, Button, Card } from '@/components/ui';
 
 type RiskParams = {
   max_position_size: number;
@@ -67,30 +68,30 @@ export default function RiskPage() {
           <p className="text-sm text-gray-500">Tune risk settings used by runtime and backtests</p>
         </div>
 
-        {error && <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+        {error && <Card variant="outlined" className="border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</Card>}
 
         {params && (
-          <div className="card space-y-4">
+          <Card className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Max Position Size</span>
-                <input className="input" type="number" value={params.max_position_size} onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} />
+                <Input type="number" value={params.max_position_size} onChange={(e) => setParams({ ...params, max_position_size: Number(e.target.value) })} />
               </label>
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Max Daily Loss</span>
-                <input className="input" type="number" value={params.max_daily_loss} onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} />
+                <Input type="number" value={params.max_daily_loss} onChange={(e) => setParams({ ...params, max_daily_loss: Number(e.target.value) })} />
               </label>
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Stop Loss %</span>
-                <input className="input" type="number" step="0.01" value={params.stop_loss_percentage} onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} />
+                <Input type="number" step="0.01" value={params.stop_loss_percentage} onChange={(e) => setParams({ ...params, stop_loss_percentage: Number(e.target.value) })} />
               </label>
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Take Profit %</span>
-                <input className="input" type="number" step="0.01" value={params.take_profit_percentage} onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} />
+                <Input type="number" step="0.01" value={params.take_profit_percentage} onChange={(e) => setParams({ ...params, take_profit_percentage: Number(e.target.value) })} />
               </label>
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Max Concurrent Trades</span>
-                <input className="input" type="number" value={params.max_concurrent_trades} onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} />
+                <Input type="number" value={params.max_concurrent_trades} onChange={(e) => setParams({ ...params, max_concurrent_trades: Number(e.target.value) })} />
               </label>
               <label className="space-y-1">
                 <span className="text-sm text-gray-600">Min Confidence</span>
@@ -102,10 +103,10 @@ export default function RiskPage() {
               </label>
             </div>
             <div className="flex items-center gap-2">
-              <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+              <Button variant="primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
               {saved && <span className="text-sm text-green-600">Saved!</span>}
             </div>
-          </div>
+          </Card>
         )}
       </div>
     </Dashboard>

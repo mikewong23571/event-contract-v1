@@ -4,23 +4,23 @@ import { useEffect, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
 import { LazyBacktestResultsWithFallback } from '@/components/lazy/LazyComponents';
 import { useRenderTimeTracker, useApiTracker } from '@/stores/performanceStore';
+import { Input, Button, Card } from '@/components/ui';
 
 type CreateResponse = { backtest_id: string; status: string; created_at: string };
 type GetResponse = { backtest_id: string; status: string; strategy_name: string; results?: { total_trades: number; win_rate: number; total_return: number }; summary?: string };
 
 export default function BacktestingPage() {
-  // Performance monitoring
   useRenderTimeTracker('BacktestingPage');
   const { trackApiCall } = useApiTracker();
   
-  const [strategyName, setStrategyName] = useState('baseline-v1');
+  const [strategyName, setStrategyName] = useState('RSI Strategy');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [startDate, setStartDate] = useState('2024-01-01');
-  const [endDate, setEndDate] = useState('2024-02-01');
+  const [endDate, setEndDate] = useState('2024-12-31');
   const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [backtestId, setBacktestId] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
   const [results, setResults] = useState<any>(null);
 
@@ -83,31 +83,31 @@ export default function BacktestingPage() {
             <p className="text-sm text-gray-500">Submit a backtest job and monitor status</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <input className="input w-44" value={strategyName} onChange={(e) => setStrategyName(e.target.value)} placeholder="Strategy Name" />
-            <input className="input w-36" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} placeholder="Symbol" />
-            <input className="input w-36" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-            <input className="input w-36" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-            <button className="btn btn-primary" onClick={createBacktest} disabled={creating}>{creating ? 'Submitting…' : 'Create Backtest'}</button>
+            <Input className="w-44" value={strategyName} onChange={(e) => setStrategyName(e.target.value)} placeholder="Strategy Name" />
+            <Input className="w-36" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} placeholder="Symbol" />
+            <Input className="w-36" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            <Input className="w-36" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            <Button variant="primary" onClick={createBacktest} disabled={creating}>{creating ? 'Submitting…' : 'Create Backtest'}</Button>
           </div>
         </div>
 
-        {error && <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+        {error && <Card variant="outlined" className="border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</Card>}
 
         {backtestId && (
-          <div className="card">
+          <Card className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="space-y-1">
                 <div className="text-sm text-gray-500">Backtest ID</div>
-                <div className="font-mono text-sm">{backtestId}</div>
+                <div className="text-sm font-medium">{backtestId}</div>
               </div>
-              <div>
+              <div className="space-y-1">
                 <div className="text-sm text-gray-500">Status</div>
                 <div className="text-sm font-medium">{status}</div>
               </div>
-              <button className="btn btn-secondary" onClick={refreshStatus}>Refresh</button>
+              <Button variant="secondary" onClick={refreshStatus}>Refresh</Button>
             </div>
             {summary && <div className="mt-4 text-sm text-gray-700">{summary}</div>}
-          </div>
+          </Card>
         )}
       </div>
     </Dashboard>

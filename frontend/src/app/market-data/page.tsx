@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
 import MarketDataChart from '@/components/charts/MarketDataChart';
+import { Input, Button, Card } from '@/components/ui';
 
 type Interval = '1m' | '5m' | '15m' | '1h';
 
@@ -53,7 +54,7 @@ export default function MarketDataPage() {
         <p className="text-sm text-gray-500">Live K-line data via backend API</p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <input className="input w-40" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} />
+        <Input className="w-40" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} />
         <select className="input w-28" value={interval} onChange={(e) => setInterval(e.target.value as Interval)}>
           <option value="1m">1m</option>
           <option value="5m">5m</option>
@@ -66,7 +67,7 @@ export default function MarketDataPage() {
           <option value={200}>200</option>
           <option value={500}>500</option>
         </select>
-        <button className="btn btn-primary" onClick={loadData} disabled={loading}>{loading ? 'Loading…' : 'Refresh'}</button>
+        <Button variant="primary" onClick={loadData} disabled={loading}>{loading ? 'Loading…' : 'Refresh'}</Button>
       </div>
     </div>
   ), [symbol, interval, limit, loading, loadData]);
@@ -76,7 +77,7 @@ export default function MarketDataPage() {
       <div className="space-y-6">
         {controls}
         {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+          <Card variant="outlined" className="border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</Card>
         )}
         <MarketDataChart data={points} symbol={symbol} height={360} />
       </div>

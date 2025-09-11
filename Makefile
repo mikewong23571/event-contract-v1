@@ -1,7 +1,7 @@
 # Event Contract Trading System - Development Tools
 # Unified commands for linting, formatting, and quality checks
 
-.PHONY: help format lint type-check test clean install-tools
+.PHONY: help format lint type-check test clean install-tools dev
 
 # Default target
 help:
@@ -14,6 +14,7 @@ help:
 	@echo "  make test         - Run all tests"
 	@echo "  make clean        - Clean build artifacts and caches"
 	@echo "  make install-tools - Install development tools"
+	@echo "  make dev          - Start infra (Compose) and all app services (Procfile.dev)"
 	@echo ""
 	@echo "Component-specific:"
 	@echo "  make format-python    - Format Python code only"
@@ -23,8 +24,11 @@ help:
 
 # Install development tools
 install-tools:
-	@echo "Installing Python development tools..."
-	pip install black flake8 isort mypy
+	@echo "Syncing Python project dependencies with uv (including dev extras)..."
+	cd backend && uv sync --extra dev
+	cd backtesting && uv sync --extra dev
+	cd runtime && uv sync --extra dev
+	cd notifications && uv sync --extra dev
 	@echo "Installing Node.js development tools..."
 	cd frontend && npm install --save-dev eslint prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier-plugin-tailwindcss
 
@@ -33,9 +37,11 @@ format: format-python format-frontend
 	@echo "All code formatted successfully!"
 
 format-python:
-	@echo "Formatting Python code with black and isort..."
-	black backend/ backtesting/ runtime/ notifications/
-	isort backend/ backtesting/ runtime/ notifications/
+	@echo "Formatting Python code with black and isort (via uv)..."
+	cd backend && uv run black . && uv run isort .
+	cd backtesting && uv run black . && uv run isort .
+	cd runtime && uv run black . && uv run isort .
+	cd notifications && uv run black . && uv run isort .
 
 format-frontend:
 	@echo "Formatting frontend code with prettier..."
@@ -46,8 +52,11 @@ lint: lint-python lint-frontend
 	@echo "All linting completed!"
 
 lint-python:
-	@echo "Linting Python code with flake8..."
-	flake8 backend/ backtesting/ runtime/ notifications/
+	@echo "Linting Python code with flake8 (via uv)..."
+	cd backend && uv run flake8 .
+	cd backtesting && uv run flake8 .
+	cd runtime && uv run flake8 .
+	cd notifications && uv run flake8 .
 
 lint-frontend:
 	@echo "Linting frontend code with eslint..."
@@ -58,11 +67,11 @@ type-check: type-check-python type-check-frontend
 	@echo "All type checking completed!"
 
 type-check-python:
-	@echo "Type checking Python code with mypy..."
-	mypy backend/src/
-	mypy backtesting/src/
-	mypy runtime/src/
-	mypy notifications/src/
+	@echo "Type checking Python code with mypy (via uv)..."
+	cd backend && uv run mypy src/
+	cd backtesting && uv run mypy src/
+	cd runtime && uv run mypy src/
+	cd notifications && uv run mypy src/
 
 type-check-frontend:
 	@echo "Type checking frontend code with tsc..."
@@ -70,11 +79,11 @@ type-check-frontend:
 
 # Run tests
 test:
-	@echo "Running all tests..."
-	cd backend && python -m pytest
-	cd backtesting && python -m pytest
-	cd runtime && python -m pytest
-	cd notifications && python -m pytest
+	@echo "Running all tests (via uv/npm)..."
+	cd backend && uv run pytest
+	cd backtesting && uv run pytest
+	cd runtime && uv run pytest
+	cd notifications && uv run pytest
 	cd frontend && npm run test
 
 # Clean build artifacts
@@ -99,3 +108,10 @@ check: lint type-check
 
 ci: format lint type-check test
 	@echo "Full CI pipeline completed!"
+
+# Start all services for development: infra via Docker Compose, apps via Procfile.dev
+dev:
+	@echo "Starting infrastructure (Docker Compose) ..."
+	docker compose up -d
+	@echo "Starting app processes via Procfile.dev using uvx (no global install)..."
+	uvx honcho start -f Procfile.dev

@@ -1,7 +1,7 @@
 version: '3.8'
 
 # Development overrides for docker-compose.yml
-# This file is automatically loaded by docker-compose for local development
+# This file is automatically loaded by docker compose for local development
 
 services:
   postgres:

@@ -38,22 +38,22 @@ cp .env.example .env
 ### 2. Start All Services
 ```bash
 # Start infrastructure services (databases, cache)
-docker-compose up -d postgres influxdb redis
+docker compose up -d postgres influxdb redis
 
 # Wait for services to be ready (about 30 seconds)
 ./scripts/wait-for-services.sh
 
 # Start trading system components
-docker-compose up -d dashboard-backend dashboard-frontend runtime-engine
+docker compose up -d dashboard-backend dashboard-frontend runtime-engine
 
 # Start backtesting service (optional, for historical analysis)
-docker-compose up -d backtesting-engine
+docker compose up -d backtesting-engine
 ```
 
 ### 3. Verify Installation
 ```bash
 # Check all services are running
-docker-compose ps
+docker compose ps
 
 # Health check
 curl http://localhost:8000/api/v1/health
@@ -192,16 +192,16 @@ alertWs.onmessage = function(event) {
 ### Service Management
 ```bash
 # Restart signal generation
-docker-compose restart runtime-engine
+docker compose restart runtime-engine
 
 # View logs for debugging
-docker-compose logs -f dashboard-backend
-docker-compose logs -f runtime-engine
+docker compose logs -f dashboard-backend
+docker compose logs -f runtime-engine
 
 # Update to latest version
 git pull origin main
-docker-compose pull
-docker-compose up -d
+docker compose pull
+docker compose up -d
 ```
 
 ### Data Management
@@ -318,7 +318,7 @@ Stop using if you see:
 - Check authentication tokens
 
 ### Support Resources
-- **Logs**: Check `docker-compose logs` for detailed error messages
+- **Logs**: Check `docker compose logs` for detailed error messages
 - **Health Endpoint**: Monitor `/api/v1/health` for system status
 - **Metrics**: Review performance data for trends
 - **Configuration**: Verify all environment variables are set correctly

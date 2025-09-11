@@ -1,0 +1,21 @@
+Library: notification_manager
+
+Purpose: Dispatch alerts/notifications to external channels (Telegram, Feishu, etc.).
+
+Key Modules:
+- notification_manager.py: Unified API for sending notifications.
+- telegram_notifier.py: Telegram channel implementation.
+- feishu_notifier.py: Feishu channel implementation.
+- template_manager.py: Message templating.
+
+CLI (cli.py):
+- Entrypoint: `python -m notifications.src.lib.notification_manager.cli`
+- Flags: `--help`, `--version`, `--format json|text`
+- Commands: `send`, `template-test`
+
+Data Contracts:
+- Message payloads as JSON (title, body, severity, context)
+
+Notes:
+- Do not log secrets (API tokens); follow security guidance in constitution.
+

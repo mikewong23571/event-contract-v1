@@ -1,0 +1,22 @@
+Library: backtesting_engine
+
+Purpose: Historical simulation of strategies, reporting and performance analysis.
+
+Key Modules:
+- backtesting_engine.py: `BacktestingEngine.run_backtest(...)`, `run_parameter_optimization(...)`, `run_monte_carlo_simulation(...)`, `run_walk_forward_analysis(...)`.
+- strategy_simulator.py: Strategy execution logic per bar.
+- performance_analyzer.py: KPIs (win rate, drawdown, Sharpe, PnL, etc.).
+- report_generator.py: Aggregated results and export.
+
+CLI (cli.py):
+- Entrypoint: `python -m backtesting.src.lib.backtesting_engine.cli`
+- Flags: `--help`, `--version`, `--format json|text`
+- Commands: `run`, `optimize`, `walk-forward`, `report`
+
+Data Contracts:
+- BacktestResult (backtesting/src/models/backtest_result.py)
+- BacktestTrade (backtesting/src/models/backtest_trade.py)
+
+Notes:
+- Deterministic where feasible; ensure reproducibility for analysis.
+

@@ -1,0 +1,21 @@
+Library: risk_management
+
+Purpose: Enforce risk constraints (position sizing, exposure limits, validation).
+
+Key Modules:
+- risk_manager.py: High-level risk checks and orchestration.
+- position_validator.py: Validates new positions against limits.
+- exposure_calculator.py: Computes exposure metrics.
+
+CLI (cli.py):
+- Entrypoint: `python -m backend.src.lib.risk_management.cli`
+- Flags: `--help`, `--version`, `--format json|text`
+- Commands: `validate-position`, `calculate-exposure`
+
+Data Contracts:
+- RiskParameters (backend/src/models/risk_parameters.py)
+- TradingSignal (backend/src/models/trading_signal.py)
+
+Notes:
+- Validators raise on invalid configuration; probability edge range typically [0.01, 0.20].
+

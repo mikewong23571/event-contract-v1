@@ -1,0 +1,21 @@
+Library: signal_generation
+
+Purpose: Generate trading signals from technical indicators and compute probabilities.
+
+Key Modules:
+- probability_calculator.py: `ProbabilityCalculator.calculate_probability(market_data, indicators)` → `{ probability, direction, signal_strength, component_signals }`; `calculate_confidence_metrics(probability, signal_strength, market_data)` → metrics dict.
+- technical_analysis.py: `TechnicalAnalyzer.analyze(market_data)` → indicators dict (rsi, macd, bollinger_bands, momentum, volume_sma, volatility).
+- signal_generator.py: `SignalGenerator.generate_signal(market_data, symbol, expiry_minutes=15)` → `TradingSignal | None`; `batch_generate_signals(map[symbol]=data, expiry_minutes)`; `validate_signal_quality(signal)`.
+
+CLI (cli.py):
+- Entrypoint: `python -m backend.src.lib.signal_generation.cli`
+- Flags: `--help`, `--version`, `--format json|text`, `--strategy-version`, `--expiry-minutes`, `--data-points`
+- Commands: `generate`, `batch`, `validate`
+
+Data Contracts:
+- Input: List[MarketData] (see backend/src/models/market_data.py)
+- Output: TradingSignal (see backend/src/models/trading_signal.py)
+
+Notes:
+- Probabilities are normalized to [0.5, 0.95]. Minimal edge threshold ~0.55 in SignalGenerator.
+

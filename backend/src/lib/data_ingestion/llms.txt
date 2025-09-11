@@ -1,0 +1,21 @@
+Library: data_ingestion
+
+Purpose: Fetch, validate, transform and ingest market data for downstream components.
+
+Key Modules:
+- market_data_fetcher.py: Connectors for exchanges/APIs; pulls OHLCV.
+- data_validator.py: Schema and integrity checks on incoming data.
+- data_transformer.py: Normalization and feature engineering.
+- data_ingester.py: Batch and streaming ingestion orchestration.
+
+CLI (cli.py):
+- Entrypoint: `python -m backend.src.lib.data_ingestion.cli`
+- Flags: `--help`, `--version`, `--format json|text`
+- Commands: `fetch`, `validate`, `transform`, `ingest`
+
+Data Contracts:
+- MarketData (backend/src/models/market_data.py)
+
+Notes:
+- Uses real dependencies (e.g., exchange APIs, databases) per constitution where applicable.
+

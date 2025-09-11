@@ -2,25 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
+    /* Light theme */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
   }
 
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
   }
   
   * {
@@ -30,27 +63,241 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: 'rlig' 1, 'calt' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 滚动条样式 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+
+  /* 选择文本样式 */
+  ::selection {
+    @apply bg-primary/20 text-primary-foreground;
+  }
+
+  /* 焦点样式 */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
   }
 }
 
 @layer components {
+  /* 基础组件样式 */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
   }
   
   .btn-primary {
-    @apply btn bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:scale-105 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-muted hover:text-muted-foreground;
+  }
+
+  .btn-outline {
+    @apply btn border border-input bg-background hover:bg-muted hover:text-muted-foreground;
   }
   
   .card {
-    @apply rounded-lg border bg-background p-6 shadow-sm;
+    @apply rounded-xl border bg-background text-foreground shadow-sm transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  .card-glass {
+    @apply card backdrop-blur-md bg-background/80 border-white/10;
   }
   
   .input {
-    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+  }
+
+  .input-error {
+    @apply input border-destructive focus-visible:ring-destructive;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary text-primary-foreground;
+  }
+
+  .badge-secondary {
+    @apply badge bg-secondary text-secondary-foreground;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
+  }
+
+  /* 页面过渡动画 */
+  .page-transition {
+    @apply animate-fade-in;
+  }
+
+  /* 卡片网格布局 */
+  .grid-cards {
+    @apply grid gap-6 md:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* 数据表格样式 */
+  .data-table {
+    @apply w-full overflow-hidden rounded-lg border;
+  }
+
+  .data-table th {
+    @apply bg-muted px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 text-sm;
+  }
+
+  .data-table tr:hover {
+    @apply bg-muted/50;
+  }
+
+  /* 状态指示器 */
+  .status-dot {
+    @apply h-2 w-2 rounded-full;
+  }
+
+  .status-online {
+    @apply status-dot bg-success-500;
+  }
+
+  .status-offline {
+    @apply status-dot bg-danger-500;
+  }
+
+  .status-pending {
+    @apply status-dot bg-warning-500;
+  }
+
+  /* Loading 动画 */
+  .loading-spinner {
+    @apply h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent;
+  }
+
+  .loading-dots {
+    @apply inline-flex space-x-1;
+  }
+
+  .loading-dots > div {
+    @apply h-2 w-2 animate-pulse rounded-full bg-current;
+  }
+
+  .loading-dots > div:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .loading-dots > div:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  /* 渐变文本 */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  /* 玻璃形态效果 */
+  .glass-effect {
+    @apply backdrop-blur-md bg-background/80 border border-white/10;
+  }
+
+  /* 悬浮效果 */
+  .floating {
+    @apply shadow-floating;
+  }
+
+  /* 响应式容器 */
+  .container-responsive {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* 文本截断工具 */
+  .text-truncate {
+    @apply truncate;
+  }
+
+  .text-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .text-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 隐藏滚动条但保持功能 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 自定义滚动条 */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
+  }
+
+  /* 安全区域适配 */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
   }
 }

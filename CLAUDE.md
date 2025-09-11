@@ -1,40 +1,39 @@
-# event-contract-v1 Development Guidelines
+# Repository Guidelines
 
-Auto-generated from all feature plans. Last updated: 2025-09-10
+This document is a concise contributor guide for the Event Contract Trading System.
 
-## Active Technologies
-- Python 3.11+ (FastAPI backend, pandas/numpy data analysis, pytest testing)
-- React + TailwindCSS (dashboard frontend) 
-- PostgreSQL + Time-series DB (data storage)
-- WebSocket libraries (real-time data streaming)
+## Project Structure & Module Organization
+- Root: shared config (`.env`, `Makefile`, `docker-compose*.yml`), docs.
+- `backend/` FastAPI API + WebSocket; `runtime/` real‑time engine; `backtesting/` analysis; `notifications/` alerts; `frontend/` Next.js dashboard.
+- Source in `src/`; tests in `tests/` (unit/integration/e2e). Assets live in component folders.
 
-## Project Structure
-```
-backend/          # FastAPI backend services
-frontend/         # React dashboard UI  
-tests/           # Test suites
-specs/           # Feature specifications
-```
+## Build, Test, and Development Commands
+- Install deps (all Python via uv): `make install-tools`
+- Start dev (infra + apps via honcho): `make dev`
+- Stop services: `make shutdown` (or `make stop` / `make down`)
+- Format, Lint, Types, Tests: `make format | lint | type-check | test | ci`
+- Component examples: `cd backend && uv run uvicorn src.main:app --reload`, `cd frontend && npm run dev`
+- Compose: use `docker compose ...` (not `docker-compose`).
 
-## Commands
-```bash
-# Python backend
-uv run pytest
-uv run ruff check .
+## Coding Style & Naming Conventions
+- Python: Black + isort, Flake8, Mypy (py311). Keep modules small; functions snake_case; classes PascalCase; files snake_case.
+- TypeScript/JS: ESLint + Prettier; React with Next.js App Router.
+- Keep logs structured; avoid global state; prefer pure functions in libs.
 
-# Frontend (when implemented)
-npm test
-npm run lint
-```
+## Testing Guidelines
+- Python: pytest (asyncio where needed), run with `uv run pytest`. Test files: `tests/**/test_*.py`.
+- Frontend: Jest/RTL (`npm test`). Add integration tests for API interactions where feasible.
+- Aim for meaningful coverage on logic paths; prefer contract/integration tests for service boundaries.
 
-## Code Style
-- Python: Follow PEP 8, use type hints, uv for dependency management
-- React: Standard conventions with TypeScript
-- Testing: pytest for Python, comprehensive test coverage
+## Commit & Pull Request Guidelines
+- Use Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`.
+- PRs must include: scope/intent, linked issues, test evidence (commands/output), and user‑visible changes (screenshots for UI).
+- Keep diffs focused; update docs when behavior or commands change.
 
-## Recent Changes
-- 001-1-10-80: Added event contract trading system with Python backend, React frontend, and real-time data processing
+## Security & Configuration Tips
+- Never commit secrets. Use `.env` locally; only `NEXT_PUBLIC_*` are exposed to the browser.
+- Follow principle of least privilege; validate inputs; prefer structured logging.
 
-<!-- MANUAL ADDITIONS START -->
-- use uv manage python project, don't use requirements.txt, use pyproject.toml to manage deps
-<!-- MANUAL ADDITIONS END -->
+## Agent‑Specific Instructions
+- Python deps are managed with uv; do not add `requirements.txt`. Use `pyproject.toml` + `uv.lock` and `uv add/remove`.
+- Adhere to `/memory/constitution.md` (library‑first, CLI protocol, TDD, observability, versioning).

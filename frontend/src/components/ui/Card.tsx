@@ -1,10 +1,14 @@
 import { HTMLAttributes, forwardRef } from 'react';
 import { clsx } from 'clsx';
+import { motion } from 'framer-motion';
+import { cardHover, fadeIn } from '@/utils/animations';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'outlined';
+  variant?: 'default' | 'elevated' | 'outlined' | 'glass';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
+  interactive?: boolean;
+  selected?: boolean;
 }
 
 interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
@@ -12,13 +16,14 @@ interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
 interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ variant = 'default', padding = 'md', hover = false, className, children, ...props }, ref) => {
+  ({ variant = 'default', padding = 'md', hover = false, interactive = false, selected = false, className, children, ...props }, ref) => {
     const baseClasses = 'card';
     
     const variantClasses = {
       default: '',
       elevated: 'shadow-lg',
       outlined: 'border border-border',
+      glass: 'card-glass',
     };
 
     const paddingClasses = {
@@ -28,22 +33,38 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       lg: 'p-6',
     };
 
+    const { 
+      onDrag, 
+      onDragStart, 
+      onDragEnd, 
+      onAnimationStart,
+      onAnimationEnd,
+      onTransitionEnd,
+      ...restProps 
+    } = props;
+
     return (
-      <div
+      <motion.div
         ref={ref}
         className={clsx(
           baseClasses,
           variantClasses[variant],
           paddingClasses[padding],
           {
-            'hover:shadow-md transition-shadow duration-200': hover,
+            'cursor-pointer': interactive,
+            'ring-2 ring-primary-500 shadow-lg': selected,
           },
           className
         )}
-        {...props}
+        variants={fadeIn}
+        initial="initial"
+        animate="animate"
+        whileHover={hover || interactive ? cardHover : undefined}
+        whileTap={interactive ? { scale: 0.98 } : undefined}
+        {...restProps}
       >
         {children}
-      </div>
+      </motion.div>
     );
   }
 );

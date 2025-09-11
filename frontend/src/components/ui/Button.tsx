@@ -1,5 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { clsx } from 'clsx';
+import { motion } from 'framer-motion';
+import { buttonHover, buttonTap, loadingSpinner } from '@/utils/animations';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger';
@@ -37,32 +39,71 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'h-12 px-6 text-base',
     };
 
+    const { 
+      onDrag, 
+      onDragStart, 
+      onDragEnd, 
+      onAnimationStart,
+      onAnimationEnd,
+      onTransitionEnd,
+      ...restProps 
+    } = props;
+
     return (
-      <button
+      <motion.button
         ref={ref}
         className={clsx(
           baseClasses,
           variantClasses[variant],
           sizeClasses[size],
           {
-            'opacity-50 cursor-not-allowed hover:scale-100 active:scale-100': disabled || loading,
+            'opacity-50 cursor-not-allowed': disabled || loading,
           },
           className
         )}
         disabled={disabled || loading}
-        {...props}
+        whileHover={!disabled && !loading ? buttonHover : undefined}
+        whileTap={!disabled && !loading ? buttonTap : undefined}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        {...restProps}
       >
         {loading && (
-          <div className="loading-spinner mr-2" />
+          <motion.div 
+            className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full"
+            variants={loadingSpinner}
+            animate="animate"
+          />
         )}
         {leftIcon && !loading && (
-          <span className="mr-2">{leftIcon}</span>
+          <motion.span 
+            className="mr-2"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {leftIcon}
+          </motion.span>
         )}
-        {children}
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.05 }}
+        >
+          {children}
+        </motion.span>
         {rightIcon && (
-          <span className="ml-2">{rightIcon}</span>
+          <motion.span 
+            className="ml-2"
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {rightIcon}
+          </motion.span>
         )}
-      </button>
+      </motion.button>
     );
   }
 );

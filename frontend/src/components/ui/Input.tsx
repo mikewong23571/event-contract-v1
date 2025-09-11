@@ -1,5 +1,7 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
+import { InputHTMLAttributes, forwardRef, useState } from 'react';
 import { clsx } from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeIn, slideIn, scaleIn } from '@/utils/animations';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   variant?: 'default' | 'error' | 'success';
@@ -9,6 +11,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   label?: string;
   helperText?: string;
+  animated?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -20,19 +23,39 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     error,
     label,
     helperText,
+    animated = true,
     className,
     id,
-    ...props 
+    onFocus,
+    onBlur,
+    onDrag,
+    onDragStart,
+    onDragEnd,
+    onAnimationStart,
+    onAnimationEnd,
+    onTransitionEnd,
+    ...restProps 
   }, ref) => {
+    const [isFocused, setIsFocused] = useState(false);
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
     const actualVariant = error ? 'error' : variant;
     
     const baseClasses = 'input';
     
     const variantClasses = {
-      default: '',
-      error: 'border-danger-500 focus:border-danger-500 focus:ring-danger-500/20',
-      success: 'border-success-500 focus:border-success-500 focus:ring-success-500/20',
+      default: 'transition-all duration-200 focus:ring-2 focus:ring-primary-500/20',
+      error: 'border-danger-500 focus:border-danger-500 focus:ring-2 focus:ring-danger-500/20',
+      success: 'border-success-500 focus:border-success-500 focus:ring-2 focus:ring-success-500/20',
+    };
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      onBlur?.(e);
     };
 
     const sizeClasses = {
@@ -47,30 +70,57 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       lg: leftIcon ? 'pl-12' : rightIcon ? 'pr-12' : '',
     };
 
+    const InputComponent = animated ? motion.input : 'input';
+    const motionProps = animated ? {
+      whileFocus: { scale: 1.02 },
+      transition: { type: 'spring', stiffness: 300, damping: 30 }
+    } : {};
+
     return (
-      <div className="w-full">
+      <motion.div 
+        className="w-full"
+        variants={animated ? fadeIn : undefined}
+        initial={animated ? 'initial' : undefined}
+        animate={animated ? 'animate' : undefined}
+      >
         {label && (
-          <label 
+          <motion.label 
             htmlFor={inputId}
-            className="block text-sm font-medium text-foreground mb-1.5"
+            className={clsx(
+              'block text-sm font-medium mb-1.5 transition-colors duration-200',
+              isFocused ? 'text-primary-500' : 'text-foreground'
+            )}
+            animate={animated ? {
+              y: isFocused ? -2 : 0,
+              scale: isFocused ? 1.02 : 1
+            } : undefined}
+            transition={animated ? { type: 'spring', stiffness: 300, damping: 30 } : undefined}
           >
             {label}
-          </label>
+          </motion.label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className={clsx(
-              'absolute left-0 top-0 h-full flex items-center justify-center text-muted-foreground',
-              {
-                'w-8': inputSize === 'sm',
-                'w-10': inputSize === 'md',
-                'w-12': inputSize === 'lg',
-              }
-            )}>
+            <motion.div 
+              className={clsx(
+                'absolute left-0 top-0 h-full flex items-center justify-center transition-colors duration-200',
+                isFocused ? 'text-primary-500' : 'text-muted-foreground',
+                {
+                  'w-8': inputSize === 'sm',
+                  'w-10': inputSize === 'md',
+                  'w-12': inputSize === 'lg',
+                }
+              )}
+              animate={animated ? {
+                scale: isFocused ? 1.1 : 1,
+                x: isFocused ? 2 : 0
+              } : undefined}
+              transition={animated ? { type: 'spring', stiffness: 300, damping: 30 } : undefined}
+            >
               {leftIcon}
-            </div>
+            </motion.div>
           )}
-          <input
+          <InputComponent
             ref={ref}
             id={inputId}
             className={clsx(
@@ -80,33 +130,53 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               iconPadding[inputSize],
               className
             )}
-            {...props}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            {...(animated ? motionProps : {})}
+            {...restProps}
           />
           {rightIcon && (
-            <div className={clsx(
-              'absolute right-0 top-0 h-full flex items-center justify-center text-muted-foreground',
-              {
-                'w-8': inputSize === 'sm',
-                'w-10': inputSize === 'md',
-                'w-12': inputSize === 'lg',
-              }
-            )}>
+            <motion.div 
+              className={clsx(
+                'absolute right-0 top-0 h-full flex items-center justify-center transition-colors duration-200',
+                isFocused ? 'text-primary-500' : 'text-muted-foreground',
+                {
+                  'w-8': inputSize === 'sm',
+                  'w-10': inputSize === 'md',
+                  'w-12': inputSize === 'lg',
+                }
+              )}
+              animate={animated ? {
+                scale: isFocused ? 1.1 : 1,
+                x: isFocused ? -2 : 0
+              } : undefined}
+              transition={animated ? { type: 'spring', stiffness: 300, damping: 30 } : undefined}
+            >
               {rightIcon}
-            </div>
+            </motion.div>
           )}
         </div>
-        {(error || helperText) && (
-          <p className={clsx(
-            'mt-1.5 text-xs',
-            {
-              'text-danger-600': error,
-              'text-muted-foreground': !error && helperText,
-            }
-          )}>
-            {error || helperText}
-          </p>
-        )}
-      </div>
+        <AnimatePresence mode="wait">
+          {(error || helperText) && (
+            <motion.p 
+              className={clsx(
+                'mt-1.5 text-xs',
+                {
+                  'text-danger-600': error,
+                  'text-muted-foreground': !error && helperText,
+                }
+              )}
+              variants={animated ? slideIn : undefined}
+              initial={animated ? 'initial' : undefined}
+              animate={animated ? 'animate' : undefined}
+              exit={animated ? 'exit' : undefined}
+              key={error ? 'error' : 'helper'}
+            >
+              {error || helperText}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
     );
   }
 );

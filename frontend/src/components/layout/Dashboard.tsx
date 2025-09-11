@@ -1,3 +1,5 @@
+"use client";
+
 /* Using the automatic JSX runtime; no explicit React import required. */
 
 import { ReactNode, useState } from 'react';

@@ -23,6 +23,7 @@ from ..lib.backtesting_engine.backtesting_engine import BacktestingEngine
 from ..lib.backtesting_engine.strategy_simulator import StrategySimulator
 from ..lib.backtesting_engine.report_generator import ReportGenerator
 from ..lib.backtesting_engine.cli import create_sample_market_data
+from ..config.logging import configure_structlog
 
 
 PACKAGE_NAME = "event-contract-backtesting"
@@ -143,6 +144,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: List[str] | None = None) -> int:
+    # Configure structured logging early
+    configure_structlog()
     parser = build_parser()
     args = parser.parse_args(argv)
 
@@ -162,4 +165,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
-

@@ -5,6 +5,7 @@ FastAPI application entry point for the trading system backend.
 """
 
 from fastapi import FastAPI
+from .config.logging_config import configure_structlog
 from .api.signals import router as signals_router
 from .api.market_data import router as market_data_router
 from .api.risk import router as risk_router
@@ -18,6 +19,10 @@ from .middleware.cors import setup_cors
 from .middleware.logging import RequestLoggingMiddleware
 from .middleware.error_handler import UnhandledErrorMiddleware, setup_exception_handlers
 from .middleware.auth import AuthenticationMiddleware
+from .api.health import router as health_router
+
+# Configure structured logging early
+configure_structlog()
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -50,10 +55,8 @@ async def root():
     }
 
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint for monitoring."""
-    return {"status": "healthy", "service": "backend"}
+# Health endpoints (under /api/v1)
+app.include_router(health_router, prefix="/api/v1")
 
 # Include API routers
 app.include_router(signals_router, prefix="/api/v1")

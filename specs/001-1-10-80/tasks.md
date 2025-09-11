@@ -136,10 +136,10 @@
 - [x] **T091** [P] Notification CLI in notifications/src/cli/notification_cli.py
 
 ## Phase 3.15: Performance & Monitoring
-- [ ] **T092** [P] Performance metrics collection in backend/src/monitoring/metrics.py
-- [ ] **T093** [P] Health check endpoints in backend/src/api/health.py
-- [ ] **T094** [P] System alerts configuration in backend/src/monitoring/alerts.py
-- [ ] **T095** Structured logging setup across all components
+- [x] **T092** [P] Performance metrics collection in backend/src/monitoring/metrics.py
+- [x] **T093** [P] Health check endpoints in backend/src/api/health.py
+- [x] **T094** [P] System alerts configuration in backend/src/monitoring/alerts.py
+- [x] **T095** Structured logging setup across all components
 
 ## Phase 3.16: Testing & Polish
 - [ ] **T096** [P] Unit tests for probability calculations in backend/tests/unit/test_probability.py

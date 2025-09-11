@@ -146,7 +146,7 @@
 - [x] **T097** [P] Unit tests for risk validation in backend/tests/unit/test_risk_validation.py
 - [x] **T098** [P] Unit tests for signal generation in backend/tests/unit/test_signal_generation.py
 - [x] **T099** [P] Frontend component tests in frontend/tests/components/
-- [ ] **T100** [P] Performance tests for signal latency (<1s requirement)
+- [x] **T100** [P] Performance tests for signal latency (<1s requirement)
 - [ ] **T101** [P] Load tests for WebSocket connections
 - [ ] **T102** [P] End-to-end tests for complete trading workflows
 - [ ] **T103** [P] Update API documentation in docs/api.md

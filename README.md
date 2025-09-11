@@ -101,6 +101,23 @@ make clean
 
 说明：Makefile 内部所有 Python 工具都通过 `uv run ...` 执行，保证在项目虚拟环境中运行（不污染全局环境）。
 
+### 关闭/停止服务
+
+`make dev` 使用 uvx + honcho 按 `Procfile.dev` 启动应用进程，并用 `docker compose` 启动基础设施。可用以下命令一键关闭：
+
+```bash
+# 停止由 honcho 拉起的前后端/服务进程（尽力而为）
+make stop
+
+# 仅关闭基础设施容器（Postgres/InfluxDB/Redis 等）
+make down
+
+# 一键关闭：先 stop 应用进程，再 down 基础设施
+make shutdown
+```
+
+提示：在运行 `make dev` 的终端中按 Ctrl+C 也会停止 honcho 管理的应用进程；随后可执行 `make down` 关闭基础设施。
+
 ## 组件开发速查
 
 Backend（FastAPI）：
@@ -170,4 +187,3 @@ docker compose down -v
 ---
 
 如需进一步脚手架或自动化命令支持，可在 Makefile 中追加目标，并优先通过 `uv run` 执行 Python 工具。
-

@@ -1,7 +1,7 @@
 # Event Contract Trading System - Development Tools
 # Unified commands for linting, formatting, and quality checks
 
-.PHONY: help format lint type-check test clean install-tools dev
+.PHONY: help format lint type-check test clean install-tools dev stop down shutdown
 
 # Default target
 help:
@@ -115,3 +115,24 @@ dev:
 	docker compose up -d
 	@echo "Starting app processes via Procfile.dev using uvx (no global install)..."
 	uvx honcho start -f Procfile.dev
+
+# Stop only app processes started by honcho (best-effort)
+stop:
+	@echo "Stopping app processes (honcho-managed) ..."
+	-pkill -f "honcho start -f Procfile.dev" || true
+	-pkill -f "uvicorn src.main:app" || true
+	-pkill -f "uv run -m src.main" || true
+	-pkill -f "npm run dev" || true
+	@echo "App processes stopped (if they were running)."
+
+# Stop only infrastructure containers
+down:
+	@echo "Stopping infrastructure (Docker Compose) ..."
+	docker compose down
+
+# One-click: stop app processes and infrastructure
+shutdown:
+	@echo "Shutting down app processes and infrastructure ..."
+	$(MAKE) stop
+	$(MAKE) down
+	@echo "All services stopped."

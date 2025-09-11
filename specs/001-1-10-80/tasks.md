@@ -129,11 +129,11 @@
 - [x] **T086** [P] Error handling middleware in backend/src/middleware/error_handler.py
 
 ## Phase 3.14: CLI Tools (Constitutional Requirement)
-- [ ] **T087** [P] Signal generation CLI in backend/src/cli/signal_cli.py
-- [ ] **T088** [P] Market data CLI in backend/src/cli/data_cli.py
-- [ ] **T089** [P] Backtesting CLI in backtesting/src/cli/backtest_cli.py
-- [ ] **T090** [P] Risk management CLI in backend/src/cli/risk_cli.py
-- [ ] **T091** [P] Notification CLI in notifications/src/cli/notification_cli.py
+- [x] **T087** [P] Signal generation CLI in backend/src/cli/signal_cli.py
+- [x] **T088** [P] Market data CLI in backend/src/cli/data_cli.py
+- [x] **T089** [P] Backtesting CLI in backtesting/src/cli/backtest_cli.py
+- [x] **T090** [P] Risk management CLI in backend/src/cli/risk_cli.py
+- [x] **T091** [P] Notification CLI in notifications/src/cli/notification_cli.py
 
 ## Phase 3.15: Performance & Monitoring
 - [ ] **T092** [P] Performance metrics collection in backend/src/monitoring/metrics.py

@@ -13,6 +13,7 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 /**
  * Dashboard
@@ -81,7 +82,7 @@ export function Dashboard({
   }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
         <div 
@@ -94,21 +95,21 @@ export function Dashboard({
 
       {/* Mobile sidebar */}
       <div className={classNames(
-        'fixed inset-y-0 left-0 z-50 w-64 transform bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden',
+        'fixed inset-y-0 left-0 z-50 w-64 transform bg-card shadow-xl transition-transform duration-300 ease-in-out lg:hidden',
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       )}>
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
-              <ChartBarIcon className="h-5 w-5 text-white" />
+            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
+              <ChartBarIcon className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">
+            <span className="ml-2 text-lg font-semibold text-foreground">
               Event Contract
             </span>
           </div>
           <button
             onClick={() => handleSidebarToggle(false)}
-            className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+            className="rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <XMarkIcon className="h-6 w-6" />
           </button>
@@ -121,21 +122,21 @@ export function Dashboard({
                 <a
                   href={item.href}
                   className={classNames(
-                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
+                    'group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-colors',
                     item.current
-                      ? 'bg-blue-100 text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
                 >
                   <item.icon
                     className={classNames(
                       'mr-3 h-5 w-5 flex-shrink-0',
-                      item.current ? 'text-blue-500' : 'text-gray-400'
+                      item.current ? 'text-primary' : 'text-muted-foreground'
                     )}
                   />
                   {item.name}
                   {item.badge && (
-                    <span className="ml-auto rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-600">
+                    <span className="ml-auto rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
                       {item.badge}
                     </span>
                   )}
@@ -148,12 +149,12 @@ export function Dashboard({
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
-          <div className="flex h-16 items-center border-b border-gray-200 px-4">
-            <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
-              <ChartBarIcon className="h-5 w-5 text-white" />
+        <div className="flex min-h-0 flex-1 flex-col border-r border-border bg-card">
+          <div className="flex h-16 items-center border-b border-border px-4">
+            <div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
+              <ChartBarIcon className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">
+            <span className="ml-2 text-lg font-semibold text-foreground">
               Event Contract
             </span>
           </div>
@@ -165,21 +166,21 @@ export function Dashboard({
                   <a
                     href={item.href}
                     className={classNames(
-                      'group flex items-center rounded-md px-2 py-2 text-sm font-medium',
+                      'group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-colors',
                       item.current
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     )}
                   >
                     <item.icon
                       className={classNames(
                         'mr-3 h-5 w-5 flex-shrink-0',
-                        item.current ? 'text-blue-500' : 'text-gray-400'
+                        item.current ? 'text-primary' : 'text-muted-foreground'
                       )}
                     />
                     {item.name}
                     {item.badge && (
-                      <span className="ml-auto rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-600">
+                      <span className="ml-auto rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
                         {item.badge}
                       </span>
                     )}
@@ -194,10 +195,10 @@ export function Dashboard({
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white shadow-sm">
+        <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 border-b border-border bg-card shadow-sm">
           <button
             type="button"
-            className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 lg:hidden"
+            className="border-r border-border px-4 text-muted-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary lg:hidden"
             onClick={() => handleSidebarToggle(true)}
           >
             <Bars3Icon className="h-6 w-6" />
@@ -209,7 +210,7 @@ export function Dashboard({
                 <ol className="flex items-center space-x-4">
                   <li>
                     <div>
-                      <a href="/" className="text-gray-400 hover:text-gray-500">
+                      <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
                         <HomeIcon className="h-5 w-5 flex-shrink-0" />
                         <span className="sr-only">Home</span>
                       </a>
@@ -219,7 +220,7 @@ export function Dashboard({
                     <li>
                       <div className="flex items-center">
                         <svg
-                          className="h-5 w-5 flex-shrink-0 text-gray-300"
+                          className="h-5 w-5 flex-shrink-0 text-muted-foreground/50"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -229,7 +230,7 @@ export function Dashboard({
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="ml-4 text-sm font-medium text-gray-500">
+                        <span className="ml-4 text-sm font-medium text-muted-foreground">
                           {currentPage}
                         </span>
                       </div>
@@ -242,18 +243,21 @@ export function Dashboard({
             <div className="flex items-center space-x-4">
               {/* Status indicator */}
               <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 rounded-full bg-green-400" />
-                <span className="text-sm text-gray-500">Connected</span>
+                <div className="h-2 w-2 rounded-full bg-success-500" />
+                <span className="text-sm text-muted-foreground">Connected</span>
               </div>
 
+              {/* Theme toggle */}
+              <ThemeToggle />
+
               {/* User menu placeholder */}
-              <div className="h-8 w-8 rounded-full bg-gray-300" />
+              <div className="h-8 w-8 rounded-full bg-muted" />
             </div>
           </div>
         </div>
 
         {/* Page content */}
-        <main className={classNames('flex-1', className)}>
+        <main className={classNames('flex-1 bg-background', className)}>
           <div className="py-6">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               {children}

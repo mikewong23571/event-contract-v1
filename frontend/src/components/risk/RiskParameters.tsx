@@ -81,20 +81,20 @@ export function RiskParameters({
 
   return (
     <div 
-      className={['rounded-lg border border-gray-200 bg-white p-6', className]
+      className={['rounded-lg border border-border bg-card p-6', className]
         .filter(Boolean)
         .join(' ')}
     >
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900">Risk Parameters</h3>
-        <p className="mt-1 text-sm text-gray-600">
+        <h3 className="text-lg font-semibold text-foreground">Risk Parameters</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
           Configure risk management settings for your trading strategy.
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
-          <label htmlFor="max-position-size" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="max-position-size" className="block text-sm font-medium text-foreground">
             Max Position Size
           </label>
           <div className="mt-1 flex rounded-md shadow-sm">
@@ -106,17 +106,17 @@ export function RiskParameters({
               step="0.1"
               value={(formData.max_position_size * 100).toFixed(1)}
               onChange={(e) => handleInputChange('max_position_size', parseFloat(e.target.value) / 100)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-md border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:ring-primary"
               disabled={isLoading}
             />
-            <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
+            <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
               %
             </span>
           </div>
         </div>
 
         <div>
-          <label htmlFor="stop-loss" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="stop-loss" className="block text-sm font-medium text-foreground">
             Stop Loss
           </label>
           <div className="mt-1 flex rounded-md shadow-sm">
@@ -128,17 +128,17 @@ export function RiskParameters({
               step="0.1"
               value={(formData.stop_loss_percentage * 100).toFixed(1)}
               onChange={(e) => handleInputChange('stop_loss_percentage', parseFloat(e.target.value) / 100)}
-              className="block w-full rounded-md border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-md border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:ring-primary"
               disabled={isLoading}
             />
-            <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
+            <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
               %
             </span>
           </div>
         </div>
 
         <div>
-          <label htmlFor="take-profit" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="take-profit" className="block text-sm font-medium text-foreground">
             Take Profit
           </label>
           <div className="mt-1 flex rounded-md shadow-sm">
@@ -160,7 +160,7 @@ export function RiskParameters({
         </div>
 
         <div>
-          <label htmlFor="max-daily-loss" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="max-daily-loss" className="block text-sm font-medium text-foreground">
             Max Daily Loss
           </label>
           <div className="mt-1 flex rounded-md shadow-sm">
@@ -182,7 +182,7 @@ export function RiskParameters({
         </div>
 
         <div>
-          <label htmlFor="max-concurrent-trades" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="max-concurrent-trades" className="block text-sm font-medium text-foreground">
             Max Concurrent Trades
           </label>
           <input
@@ -193,20 +193,20 @@ export function RiskParameters({
             step="1"
             value={formData.max_concurrent_trades}
             onChange={(e) => handleInputChange('max_concurrent_trades', parseInt(e.target.value, 10))}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:ring-primary"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <label htmlFor="min-confidence" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="min-confidence" className="block text-sm font-medium text-foreground">
             Min Confidence Level
           </label>
           <select
             id="min-confidence"
             value={formData.min_confidence_level}
             onChange={(e) => handleInputChange('min_confidence_level', e.target.value as 'LOW' | 'MEDIUM' | 'HIGH')}
-            className="mt-1 block w-full rounded-md border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:ring-primary"
             disabled={isLoading}
           >
             {confidenceLevels.map(level => (
@@ -219,7 +219,7 @@ export function RiskParameters({
       </div>
 
       <div className="mt-6 flex items-center justify-between">
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-muted-foreground">
           Last updated: {new Date(parameters.updated_at).toLocaleString()}
         </div>
         
@@ -228,7 +228,7 @@ export function RiskParameters({
             type="button"
             onClick={handleReset}
             disabled={!hasChanges || isLoading}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Reset
           </button>
@@ -237,7 +237,7 @@ export function RiskParameters({
             type="button"
             onClick={handleSave}
             disabled={!hasChanges || isLoading}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </button>

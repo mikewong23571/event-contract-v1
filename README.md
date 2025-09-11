@@ -1,280 +1,173 @@
 # Event Contract Trading System
 
-A comprehensive trading system for Binance event contracts featuring probability-based signals, risk management, backtesting, and multi-channel notifications.
+一个面向 Binance 事件合约的交易系统，包含信号生成、风险控制、回测与多渠道通知。
 
-## 🏗️ Architecture
+重点：本项目统一使用 uv 管理 Python 依赖与运行，使用 Make 作为开发命令入口。项目不使用 requirements.txt，每个 Python 子项目都以 `pyproject.toml` + `uv.lock` 管理依赖。
 
-The system consists of 4 main components:
+## 架构概览
 
-- **Backend**: FastAPI-based API server with real-time WebSocket support
-- **Frontend**: Next.js dashboard with TailwindCSS for trading visualization
-- **Backtesting Engine**: High-performance backtesting with pandas/numpy
-- **Runtime Engine**: Real-time signal detection with WebSocket streaming
-- **Notifications**: Multi-channel alerts (Telegram, Feishu, Email)
+- Backend：FastAPI 实时 API + WebSocket
+- Frontend：Next.js 14（App Router）+ TailwindCSS
+- Backtesting：基于 pandas/numpy 的回测引擎
+- Runtime：实盘/准实时信号计算与推送
+- Notifications：多渠道告警（Telegram、飞书、Email）
 
-## 🚀 Quick Start
+目录结构（部分）：
 
-### Prerequisites
+```
+event-contract-v1/
+├── backend/              # FastAPI backend
+├── frontend/             # Next.js dashboard
+├── backtesting/          # 回测引擎
+├── runtime/              # 实时引擎
+├── notifications/        # 通知服务
+├── docker-compose.yml    # 基础设施服务（Postgres/InfluxDB/Redis 等）
+└── Makefile              # 统一开发命令入口
+```
 
-- **Python**: 3.11 or higher
-- **Node.js**: 18.0 or higher  
-- **Docker**: 20.10+ and Docker Compose 2.0+
-- **Binance API**: Testnet account for development
+## 环境要求
 
-### 1. Clone and Setup
+- Python 3.11+
+- Node.js 18+
+- Docker 20.10+ 与 Docker Compose 2+
+- uv（Python 包与运行管理）
+
+安装 uv（官方推荐脚本）：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# 安装后确保 `uv --version` 可用
+```
+
+## 快速开始（uv + Make）
+
+1) 克隆与配置：
 
 ```bash
 git clone <repository-url>
 cd event-contract-v1
-
-# Copy environment configuration
-cp .env.example .env
-# Edit .env with your API keys and settings
+cp .env.example .env  # 按需填写密钥与连接串
 ```
 
-### 2. Start Infrastructure Services
+2) 安装依赖（一次性）：
 
 ```bash
-# Start PostgreSQL, InfluxDB, Redis
-docker-compose up -d
-
-# Verify services are running
-docker-compose ps
+make install-tools
+# 说明：
+# - 会在 backend/backtesting/runtime/notifications 目录下执行 `uv sync --extra dev`
+# - 前端目录 frontend 安装开发依赖（eslint/prettier 等）
 ```
 
-### 3. Install Dependencies
+3) 启动开发环境（基础设施 + 应用进程）：
 
 ```bash
-# Install Python dependencies for all components
-cd backend && pip install -r requirements.txt
-cd ../backtesting && pip install -r requirements.txt
-cd ../runtime && pip install -r requirements.txt
-cd ../notifications && pip install -r requirements.txt
-
-# Install frontend dependencies
-cd ../frontend && npm install
+make dev
+# 说明：
+# - 先通过 Docker Compose 启动基础设施
+# - 再使用 uvx + honcho 按 Procfile.dev 启动所有应用进程
 ```
 
-### 4. Start Development Services
+4) 访问：
+
+- Dashboard：http://localhost:3000
+- API 文档（Swagger）：http://localhost:8000/docs
+- pgAdmin：http://localhost:5050
+- Redis Commander：http://localhost:8081
+
+## 常用命令（Make）
 
 ```bash
-# Terminal 1: Backend API
-cd backend && python -m src.main
-
-# Terminal 2: Frontend Dashboard
-cd frontend && npm run dev
-
-# Terminal 3: Runtime Engine
-cd runtime && python -m src.main
-
-# Terminal 4: Notifications Service
-cd notifications && python -m src.main
-```
-
-### 5. Access the System
-
-- **Dashboard**: http://localhost:3000
-- **API Docs**: http://localhost:8000/docs
-- **pgAdmin**: http://localhost:5050 (admin/admin)
-- **Redis Commander**: http://localhost:8081 (admin/admin)
-
-## 📁 Project Structure
-
-```
-event-contract-v1/
-├── backend/              # FastAPI backend service
-├── frontend/             # Next.js dashboard
-├── backtesting/          # Backtesting engine
-├── runtime/              # Real-time signal detection
-├── notifications/        # Multi-channel notifications
-├── specs/                # Feature specifications and plans
-├── memory/               # Project constitution and guidelines
-├── templates/            # Development templates
-├── scripts/              # Utility scripts
-├── docker-compose.yml    # Infrastructure services
-├── .env.example          # Environment configuration template
-└── Makefile              # Development commands
-```
-
-## 🛠️ Development
-
-### Code Quality
-
-The project uses unified code quality tools across all components:
-
-```bash
-# Format all code
+# 统一格式化（Python/前端）
 make format
 
-# Lint all code  
+# 统一 Lint（Python/前端）
 make lint
 
-# Type checking
+# 统一类型检查（mypy / tsc）
 make type-check
 
-# Run all tests
+# 统一测试（Python 用 uv 运行 pytest，前端用 npm test）
 make test
 
-# Full CI pipeline
+# 一键检查（格式 + Lint）
+make fix
+
+# CI 常用：格式 + Lint + 类型检查 + 测试
 make ci
+
+# 清理构建产物与缓存
+make clean
 ```
 
-### Database Management
+说明：Makefile 内部所有 Python 工具都通过 `uv run ...` 执行，保证在项目虚拟环境中运行（不污染全局环境）。
+
+## 组件开发速查
+
+Backend（FastAPI）：
 
 ```bash
-# Reset all data
-docker-compose down -v
-docker-compose up -d
-
-# View logs
-docker-compose logs -f postgres
-docker-compose logs -f influxdb
-docker-compose logs -f redis
-```
-
-### Component Development
-
-Each component has its own development setup:
-
-```bash
-# Backend development
 cd backend
-pip install -e ".[dev]"
-python -m pytest
-uvicorn src.main:app --reload
+uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uv run pytest
+uv run mypy src/
+```
 
-# Frontend development  
+Frontend（Next.js）：
+
+```bash
 cd frontend
 npm run dev
 npm run build
 npm run lint
-
-# Backtesting
-cd backtesting
-python -m src.cli.backtest_cli --help
-pytest tests/
-
-# Runtime engine
-cd runtime
-python -m src.main
-pytest tests/
-
-# Notifications
-cd notifications
-celery -A src.main:celery_app worker --loglevel=info
-pytest tests/
 ```
 
-## 🧪 Testing
-
-The project follows TDD (Test-Driven Development) principles:
-
-- **Contract Tests**: API endpoint validation
-- **Integration Tests**: Component interaction testing
-- **Unit Tests**: Individual function testing
-- **End-to-End Tests**: Full workflow validation
+Backtesting/Runtime/Notifications（Python 子项目同构）：
 
 ```bash
-# Run specific test types
-make test-contract
-make test-integration  
-make test-unit
-make test-e2e
+cd backtesting   # 或 runtime / notifications
+uv run -m src.main        # 运行主程序（不同子项目入口不同）
+uv run pytest             # 运行测试
 ```
 
-## 📊 Monitoring
+## 依赖管理（uv）
 
-### Health Checks
+- 同步依赖（含开发依赖）：`uv sync --extra dev`
+- 新增运行依赖：`uv add <package>`
+- 新增开发依赖：`uv add --dev <package>`
+- 移除依赖：`uv remove <package>`
+- 运行工具：`uv run <tool> ...`（例如 `uv run black .`、`uv run pytest`）
 
-- Backend: http://localhost:8000/health
-- Runtime: Check logs for service status
-- Database: http://localhost:5050 (pgAdmin)
-- Cache: http://localhost:8081 (Redis Commander)
+注意：项目不使用 requirements.txt。每个 Python 子项目使用 `pyproject.toml` + `uv.lock` 锁定依赖与可复现环境。
 
-### Metrics
-
-Prometheus metrics available on port 9090:
-- Signal generation latency
-- API request rates
-- Database connection health
-- Notification delivery rates
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Key configuration options in `.env`:
+## 基础设施（Docker Compose）
 
 ```bash
-# Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/db
-INFLUXDB_URL=http://localhost:8086
-REDIS_URL=redis://localhost:6379/0
+# 启动基础设施
+docker compose up -d
 
-# Binance API
-BINANCE_API_KEY=your_api_key
-BINANCE_SECRET_KEY=your_secret_key
-BINANCE_TESTNET=true
+# 查看状态/日志
+docker compose ps
+docker compose logs -f postgres
+docker compose logs -f influxdb
+docker compose logs -f redis
 
-# Notifications
-TELEGRAM_BOT_TOKEN=your_bot_token
-FEISHU_WEBHOOK_URL=your_webhook_url
+# 清空数据（危险操作）
+docker compose down -v
 ```
 
-### Trading Parameters
+## 调试入口
 
-```bash
-# Signal detection
-SIGNAL_INTERVAL=1.0
-MIN_CONFIDENCE=0.6
-TRADING_SYMBOLS=BTCUSDT,ETHUSDT
+- 后端健康检查：`GET http://localhost:8000/api/v1/health`
+- WebSocket：由后端 `Procfile.dev` 进程提供
+- 前端首页：`/`，可导航到 Signals/Market Data/Backtesting/Risk 等页面
 
-# Risk management  
-MAX_POSITION_SIZE=1000
-MAX_DAILY_TRADES=50
-```
+## 约定与质量
 
-## 📈 Features
+- TDD 优先，见 `/memory/constitution.md`
+- CLI 工具与可观测性要求见项目文档与各子项目 README
+- PR/变更请遵循：先增测、后实现、保持 `uv.lock` 同步
 
-- **Real-time Signals**: Probability-based trading signals with <1s latency
-- **Risk Management**: Configurable position limits and exposure controls
-- **Backtesting**: Historical validation with statistical analysis
-- **Multi-channel Alerts**: Telegram, Feishu, Email notifications
-- **Interactive Dashboard**: Real-time charts and signal visualization
-- **Performance Analytics**: Comprehensive trading metrics and reports
+---
 
-## 🚀 Deployment
+如需进一步脚手架或自动化命令支持，可在 Makefile 中追加目标，并优先通过 `uv run` 执行 Python 工具。
 
-### Production Setup
-
-1. **Environment**: Update `.env` for production settings
-2. **Database**: Configure production PostgreSQL/InfluxDB instances  
-3. **Security**: Generate secure JWT keys and API credentials
-4. **Monitoring**: Set up Prometheus/Grafana dashboards
-5. **Scaling**: Configure load balancers and multiple service instances
-
-### Docker Production
-
-```bash
-# Production build
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
-# Scale services
-docker-compose up -d --scale backend=3 --scale runtime=2
-```
-
-## 🤝 Contributing
-
-1. Follow the constitutional requirements in `/memory/constitution.md`
-2. All features start with specifications in `/specs/`
-3. Implement using TDD with contract tests first
-4. Ensure code quality with `make ci` before submitting
-5. Update documentation for new features
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## ⚠️ Disclaimer
-
-This software is for educational and research purposes only. Trading cryptocurrencies involves significant risk. The authors are not responsible for any financial losses incurred through the use of this software.

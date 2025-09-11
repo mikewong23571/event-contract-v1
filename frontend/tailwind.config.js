@@ -8,7 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Base semantic colors
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        
+        // Primary color scheme
         primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
           50: '#eff6ff',
           100: '#dbeafe',
           500: '#3b82f6',
@@ -16,6 +26,20 @@ module.exports = {
           700: '#1d4ed8',
           900: '#1e3a8a',
         },
+        
+        // Secondary color scheme
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        
+        // Muted colors
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        
+        // Status colors
         success: {
           50: '#f0fdf4',
           100: '#dcfce7',

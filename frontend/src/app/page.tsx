@@ -1,52 +1,60 @@
+import Link from 'next/link';
+import Dashboard from '@/components/layout/Dashboard';
+
 export default function HomePage() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Event Contract Trading System
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Probability-based trading signals for Binance event contracts
-          </p>
-        </div>
+    <Dashboard currentPage="Home">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Event Contract Trading System</h1>
+        <p className="text-gray-600">Probability-based trading signals for Binance event contracts</p>
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Trading Signals
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Real-time probability-based signals with risk assessment
-            </p>
-          </div>
-
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Market Data
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Live 1-minute K-line data and multi-timeframe indicators
-            </p>
-          </div>
-
-          <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Backtesting
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Historical simulation and performance analysis
-            </p>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="card flex flex-col">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Trading Signals</h3>
+          <p className="text-gray-600 text-sm mb-4">Real-time probability-based signals with risk assessment</p>
+          <div className="mt-auto">
+            <Link href="/signals" className="btn btn-primary w-full">View Signals</Link>
           </div>
         </div>
 
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center px-4 py-2 rounded-lg bg-primary-50 text-primary-700">
-            <div className="w-2 h-2 bg-primary-500 rounded-full mr-2"></div>
-            System Status: Ready
+        <div className="card flex flex-col">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Market Data</h3>
+          <p className="text-gray-600 text-sm mb-4">Live K-line data and multi-timeframe indicators</p>
+          <div className="mt-auto">
+            <Link href="/market-data" className="btn btn-primary w-full">Open Market Data</Link>
+          </div>
+        </div>
+
+        <div className="card flex flex-col">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Backtesting</h3>
+          <p className="text-gray-600 text-sm mb-4">Historical simulation and performance analysis</p>
+          <div className="mt-auto">
+            <Link href="/backtesting" className="btn btn-primary w-full">Run Backtest</Link>
           </div>
         </div>
       </div>
-    </main>
+
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
+        <div className="card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full" />
+              <span className="text-sm text-gray-700">Backend API</span>
+            </div>
+            <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">Docs</a>
+          </div>
+        </div>
+        <div className="card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full" />
+              <span className="text-sm text-gray-700">WebSocket</span>
+            </div>
+            <span className="text-sm text-gray-500">Connected</span>
+          </div>
+        </div>
+      </div>
+    </Dashboard>
   );
 }

@@ -4,8 +4,8 @@ from decimal import Decimal
 
 import pytest
 
-from runtime.src.engines.signal_detector import create_signal_detector
-from runtime.src.processors.market_data_processor import (
+from src.engines.signal_detector import create_signal_detector
+from src.processors.market_data_processor import (
     ProcessedMarketData,
     PriceData,
 )
@@ -52,4 +52,3 @@ async def test_signal_detection_latency_under_one_second():
 
     assert signal is not None, "Expected a signal to be generated"
     assert elapsed < 1.0, f"Signal detection latency too high: {elapsed:.3f}s"
-

@@ -12,14 +12,14 @@ High-performance backtesting engine for validating trading strategies against hi
 - **Storage**: HDF5 (h5py), Parquet (pyarrow)
 - **Testing**: pytest with coverage
 
-## Installation
+## Installation (uv)
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (uv)
+uv sync
 
-# Development dependencies
-pip install -e ".[dev]"
+# Include dev extras (tests, linters, etc.)
+uv sync --extra dev
 ```
 
 ## Usage
@@ -29,11 +29,19 @@ pip install -e ".[dev]"
 backtest --strategy=signal_based --symbol=BTCUSDT --start=2024-01-01 --end=2024-12-31
 
 # Run specific backtest
-python -m src.cli.backtest_cli --config=configs/strategy.yaml
+uv run -m src.cli.backtest_cli --config=configs/strategy.yaml
 
 # Generate performance report
-python -m src.analyzers.performance_analyzer --results=results/backtest_001.h5
+uv run -m src.analyzers.performance_analyzer --results=results/backtest_001.h5
 ```
+
+## Repo Workflow (uv + Make)
+
+- 推荐使用仓库根目录的 Make 命令统一操作：
+  - `make dev` 启动基础设施与所有应用服务（通过 uvx honcho + Procfile.dev）
+  - `make test` 统一运行测试
+  - `make format` / `make lint` / `make type-check` 执行代码质量工具
+  - 所有 Python 工具均通过 `uv run` 运行，无需全局安装
 
 ## Features
 

@@ -13,14 +13,14 @@ Multi-channel notification service for trading alerts and system messages suppor
 - **HTTP Clients**: aiohttp, httpx for API integrations
 - **Testing**: pytest with async and mocking support
 
-## Installation
+## Installation (uv)
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (uv)
+uv sync
 
-# Development dependencies
-pip install -e ".[dev]"
+# Include dev extras (tests, linters, etc.)
+uv sync --extra dev
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ pip install -e ".[dev]"
 notifications
 
 # Start Celery worker for background processing
-celery -A src.main:celery_app worker --loglevel=info
+uv run celery -A src.main:celery_app worker --loglevel=info
 
 # Send test notification via CLI
 notify --channel telegram --message "Test alert" --priority high
@@ -38,6 +38,14 @@ notify --channel telegram --message "Test alert" --priority high
 # Send trading signal notification
 notify --template trading_signal --data '{"symbol":"BTCUSDT","direction":"UP","probability":0.75}'
 ```
+
+## Repo Workflow (uv + Make)
+
+- 推荐使用仓库根目录的 Make 命令统一操作：
+  - `make dev` 启动基础设施与所有应用服务（通过 uvx honcho + Procfile.dev）
+  - `make test` 统一运行测试
+  - `make format` / `make lint` / `make type-check` 执行代码质量工具
+  - 所有 Python 工具均通过 `uv run` 运行，无需全局安装
 
 ## Features
 

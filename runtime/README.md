@@ -12,14 +12,14 @@ Real-time trading signal detection engine that processes live market data and ge
 - **Monitoring**: structlog, prometheus-client
 - **Testing**: pytest with asyncio and mocking
 
-## Installation
+## Installation (uv)
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (uv)
+uv sync
 
-# Development dependencies
-pip install -e ".[dev]"
+# Include dev extras (tests, linters, etc.)
+uv sync --extra dev
 ```
 
 ## Usage
@@ -34,6 +34,14 @@ runtime --config configs/production.env
 # Start signal detector only
 signal-detector --symbols BTCUSDT,ETHUSDT
 ```
+
+## Repo Workflow (uv + Make)
+
+- 推荐使用仓库根目录的 Make 命令统一操作：
+  - `make dev` 启动基础设施与所有应用服务（通过 uvx honcho + Procfile.dev）
+  - `make test` 统一运行测试
+  - `make format` / `make lint` / `make type-check` 执行代码质量工具
+  - 所有 Python 工具均通过 `uv run` 运行，无需全局安装
 
 ## Features
 

@@ -13,39 +13,16 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List
 
-try:
-    from importlib.metadata import version as _pkg_version
-except Exception:  # pragma: no cover
-    _pkg_version = None  # type: ignore
-
 from ..lib.risk_management.risk_manager import RiskManager
 from ..lib.risk_management.position_validator import PositionValidator
 from ..lib.risk_management.exposure_calculator import ExposureCalculator
 from ..models.risk_parameters import RiskParameters
 from ..models.trading_signal import TradingSignal
+from ._utils import get_version, print_output
 
 
 PACKAGE_NAME = "event-contract-backend"
 DEFAULT_VERSION = "0.1.0"
-
-
-def _get_version() -> str:
-    try:
-        if _pkg_version is not None:
-            return _pkg_version(PACKAGE_NAME)
-    except Exception:
-        pass
-    return DEFAULT_VERSION
-
-
-def _print(data: Any, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(data, indent=2, default=str))
-    else:
-        if isinstance(data, str):
-            print(data)
-        else:
-            print(json.dumps(data, indent=2, default=str))
 
 
 def _sample_risk_params(user_id: str = "test_user") -> RiskParameters:
@@ -81,7 +58,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         "last_signal_time": datetime.utcnow() - timedelta(minutes=args.last_signal_minutes),
     }
     valid, message = rm.validate_signal_risk(sig, rp, positions, daily_stats)
-    _print({"valid": valid, "message": message}, args.format)
+    print_output({"valid": valid, "message": message}, args.format)
     return 0
 
 
@@ -100,7 +77,7 @@ def cmd_position_size(args: argparse.Namespace) -> int:
         expires_at=datetime.utcnow() + timedelta(minutes=15),
     )
     size = rm.calculate_position_size(sig, rp, Decimal(str(args.account_balance)))
-    _print({"recommended_position_size": float(size)}, args.format)
+    print_output({"recommended_position_size": float(size)}, args.format)
     return 0
 
 
@@ -108,7 +85,7 @@ def cmd_exposure(args: argparse.Namespace) -> int:
     calc = ExposureCalculator()
     positions = args.positions or []
     report = calc.generate_exposure_report(positions)
-    _print(report, args.format)
+    print_output(report, args.format)
     return 0
 
 
@@ -125,7 +102,7 @@ def cmd_health(args: argparse.Namespace) -> int:
     }
     rp = _sample_risk_params()
     health = validator.check_position_health(position, Decimal(str(args.current_price)), rp)
-    _print({"position": position, "health": health}, args.format)
+    print_output({"position": position, "health": health}, args.format)
     return 0
 
 
@@ -174,7 +151,7 @@ def main(argv: List[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if getattr(args, "version", False):
-        print(_get_version())
+        print(get_version(PACKAGE_NAME, DEFAULT_VERSION))
         return 0
 
     if not getattr(args, "command", None):
@@ -189,4 +166,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
-

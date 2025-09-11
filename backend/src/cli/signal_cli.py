@@ -22,37 +22,13 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List
 
-try:
-    from importlib.metadata import version as _pkg_version
-except Exception:  # pragma: no cover - extremely rare
-    _pkg_version = None  # type: ignore
-
 from ..models.market_data import MarketData
 from ..lib.signal_generation.signal_generator import SignalGenerator
+from ._utils import get_version, print_output
 
 
 PACKAGE_NAME = "event-contract-backend"
 DEFAULT_VERSION = "0.1.0"
-
-
-def _get_version() -> str:
-    try:
-        if _pkg_version is not None:
-            return _pkg_version(PACKAGE_NAME)
-    except Exception:
-        pass
-    return DEFAULT_VERSION
-
-
-def _print(data: Any, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(data, indent=2, default=str))
-    else:
-        if isinstance(data, str):
-            print(data)
-        else:
-            # Fallback pretty text
-            print(json.dumps(data, indent=2, default=str))
 
 
 def _create_sample_market_data(symbol: str, count: int = 30) -> List[MarketData]:
@@ -83,14 +59,14 @@ def cmd_generate(args: argparse.Namespace) -> int:
     if args.sample_data:
         market_data = _create_sample_market_data(args.symbol, args.data_points)
     else:
-        _print("Error: Real market data fetching not implemented in this CLI", args.format)
+        print_output("Error: Real market data fetching not implemented in this CLI", args.format)
         return 2
 
     signal = generator.generate_signal(
         market_data=market_data, symbol=args.symbol, expiry_minutes=args.expiry_minutes
     )
     if not signal:
-        _print("No signal generated", args.format)
+        print_output("No signal generated", args.format)
         return 1
 
     payload: Dict[str, Any] = signal.dict()
@@ -102,9 +78,9 @@ def cmd_generate(args: argparse.Namespace) -> int:
             f"Confidence: {payload['confidence_level']}",
             f"Expiry: {payload['expiry_time']}",
         ]
-        _print("\n".join(lines), args.format)
+        print_output("\n".join(lines), args.format)
     else:
-        _print(payload, args.format)
+        print_output(payload, args.format)
     return 0
 
 
@@ -127,7 +103,7 @@ def cmd_batch(args: argparse.Namespace) -> int:
         }
         for s in signals
     ]
-    _print({"count": len(payload), "signals": payload}, args.format)
+    print_output({"count": len(payload), "signals": payload}, args.format)
     return 0
 
 
@@ -135,7 +111,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
     try:
         data = json.loads(args.signal_json)
     except Exception as e:  # pragma: no cover - exercised via CLI
-        _print(f"Error parsing signal JSON: {e}", args.format)
+        print_output(f"Error parsing signal JSON: {e}", args.format)
         return 2
     # Basic presence checks to avoid over-scoping
     required = ["symbol", "direction", "predicted_probability", "expiry_time"]
@@ -144,7 +120,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         "valid": len(missing) == 0,
         "missing_fields": missing,
     }
-    _print(result, args.format)
+    print_output(result, args.format)
     return 0
 
 
@@ -188,7 +164,7 @@ def main(argv: List[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if getattr(args, "version", False):
-        print(_get_version())
+        print(get_version(PACKAGE_NAME, DEFAULT_VERSION))
         return 0
 
     if not getattr(args, "command", None):
@@ -203,4 +179,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
-

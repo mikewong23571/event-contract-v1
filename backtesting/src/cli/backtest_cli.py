@@ -12,11 +12,6 @@ import json
 import sys
 from typing import Any, Dict, List
 
-try:
-    from importlib.metadata import version as _pkg_version
-except Exception:  # pragma: no cover
-    _pkg_version = None  # type: ignore
-
 import pandas as pd
 
 from ..lib.backtesting_engine.backtesting_engine import BacktestingEngine
@@ -24,29 +19,11 @@ from ..lib.backtesting_engine.strategy_simulator import StrategySimulator
 from ..lib.backtesting_engine.report_generator import ReportGenerator
 from ..lib.backtesting_engine.cli import create_sample_market_data
 from ..config.logging import configure_structlog
+from ._utils import get_version, print_output
 
 
 PACKAGE_NAME = "event-contract-backtesting"
 DEFAULT_VERSION = "0.1.0"
-
-
-def _get_version() -> str:
-    try:
-        if _pkg_version is not None:
-            return _pkg_version(PACKAGE_NAME)
-    except Exception:
-        pass
-    return DEFAULT_VERSION
-
-
-def _print(data: Any, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(data, indent=2, default=str))
-    else:
-        if isinstance(data, str):
-            print(data)
-        else:
-            print(json.dumps(data, indent=2, default=str))
 
 
 def cmd_backtest(args: argparse.Namespace) -> int:
@@ -54,7 +31,7 @@ def cmd_backtest(args: argparse.Namespace) -> int:
         try:
             market_data: pd.DataFrame = pd.read_csv(args.data_file, index_col=0, parse_dates=True)
         except Exception as e:
-            _print({"error": f"Failed to load data: {e}"}, args.format)
+            print_output({"error": f"Failed to load data: {e}"}, args.format)
             return 2
     else:
         market_data = create_sample_market_data(args.symbol, args.days)
@@ -64,7 +41,7 @@ def cmd_backtest(args: argparse.Namespace) -> int:
         try:
             params = json.loads(args.parameters)
         except Exception as e:
-            _print({"error": f"Invalid parameters JSON: {e}"}, args.format)
+            print_output({"error": f"Invalid parameters JSON: {e}"}, args.format)
             return 2
 
     defaults: Dict[str, Any] = {
@@ -94,19 +71,19 @@ def cmd_backtest(args: argparse.Namespace) -> int:
         report = ReportGenerator().generate_comprehensive_report(result, trades)
         if args.output_file:
             ReportGenerator().export_to_json(report, args.output_file)
-            _print({"saved_to": args.output_file}, args.format)
+            print_output({"saved_to": args.output_file}, args.format)
         else:
-            _print(report, args.format)
+            print_output(report, args.format)
         return 0
 
-    _print(result.dict(), args.format)
+    print_output(result.dict(), args.format)
     return 0
 
 
 def cmd_generate_data(args: argparse.Namespace) -> int:
     data = create_sample_market_data(args.symbol, args.days)
     data.to_csv(args.output_file)
-    _print({"message": "Sample data generated", "file": args.output_file}, args.format)
+    print_output({"message": "Sample data generated", "file": args.output_file}, args.format)
     return 0
 
 
@@ -150,7 +127,7 @@ def main(argv: List[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if getattr(args, "version", False):
-        print(_get_version())
+        print(get_version(PACKAGE_NAME, DEFAULT_VERSION))
         return 0
 
     if not getattr(args, "command", None):

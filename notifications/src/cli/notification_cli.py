@@ -13,40 +13,17 @@ import json
 import sys
 from typing import Any, Dict, List
 
-try:
-    from importlib.metadata import version as _pkg_version
-except Exception:  # pragma: no cover
-    _pkg_version = None  # type: ignore
-
 from ..lib.notification_manager.notification_manager import (
     NotificationManager,
     NotificationPriority,
 )
 from ..lib.notification_manager.telegram_notifier import TelegramNotifier
 from ..lib.notification_manager.feishu_notifier import FeishuNotifier
+from ._utils import get_version, print_output
 
 
 PACKAGE_NAME = "event-contract-notifications"
 DEFAULT_VERSION = "0.1.0"
-
-
-def _get_version() -> str:
-    try:
-        if _pkg_version is not None:
-            return _pkg_version(PACKAGE_NAME)
-    except Exception:
-        pass
-    return DEFAULT_VERSION
-
-
-def _print(data: Any, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(data, indent=2, default=str))
-    else:
-        if isinstance(data, str):
-            print(data)
-        else:
-            print(json.dumps(data, indent=2, default=str))
 
 
 def _load_config(path: str | None) -> Dict[str, Any]:
@@ -67,7 +44,7 @@ async def cmd_send(args: argparse.Namespace) -> int:
     priority = getattr(NotificationPriority, args.priority.upper(), NotificationPriority.MEDIUM)
     channels = [c.strip() for c in args.channels.split(",")]
     res = await mgr.send_notification(args.message, channels, priority)
-    _print(res, args.format)
+    print_output(res, args.format)
     return 0
 
 
@@ -80,7 +57,7 @@ async def cmd_validate(args: argparse.Namespace) -> int:
     if "feishu" in cfg:
         fs = FeishuNotifier(cfg["feishu"])  # type: ignore[index]
         out["feishu"] = {"config": fs.validate_config()}
-    _print(out, args.format)
+    print_output(out, args.format)
     return 0
 
 
@@ -114,7 +91,7 @@ def main(argv: List[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if getattr(args, "version", False):
-        print(_get_version())
+        print(get_version(PACKAGE_NAME, DEFAULT_VERSION))
         return 0
 
     if not getattr(args, "command", None):
@@ -131,4 +108,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
-

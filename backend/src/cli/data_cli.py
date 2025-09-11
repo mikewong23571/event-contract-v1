@@ -21,37 +21,14 @@ import sys
 from datetime import datetime
 from typing import Any, Dict, List
 
-try:
-    from importlib.metadata import version as _pkg_version
-except Exception:  # pragma: no cover
-    _pkg_version = None  # type: ignore
-
 from ..lib.data_ingestion.data_ingester import DataIngester
 from ..lib.data_ingestion.data_validator import DataValidator
 from ..lib.data_ingestion.market_data_fetcher import MarketDataFetcher
+from ._utils import get_version, print_output
 
 
 PACKAGE_NAME = "event-contract-backend"
 DEFAULT_VERSION = "0.1.0"
-
-
-def _get_version() -> str:
-    try:
-        if _pkg_version is not None:
-            return _pkg_version(PACKAGE_NAME)
-    except Exception:
-        pass
-    return DEFAULT_VERSION
-
-
-def _print(data: Any, fmt: str) -> None:
-    if fmt == "json":
-        print(json.dumps(data, indent=2, default=str))
-    else:
-        if isinstance(data, str):
-            print(data)
-        else:
-            print(json.dumps(data, indent=2, default=str))
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:
@@ -66,7 +43,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
         "records": len(data),
         "statistics": stats,
     }
-    _print(payload, args.format)
+    print_output(payload, args.format)
     return 0
 
 
@@ -89,7 +66,7 @@ def cmd_historical(args: argparse.Namespace) -> int:
         with open(args.output_file, "w") as f:
             json.dump([md.dict() for md in data], f, indent=2, default=str)
         payload["saved_to"] = args.output_file
-    _print(payload, args.format)
+    print_output(payload, args.format)
     return 0
 
 
@@ -106,7 +83,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
     )
     score = validator.get_data_quality_score(result)
     fixes = validator.suggest_data_fixes(result)
-    _print({"validation_result": result, "quality_score": score, "suggestions": fixes}, args.format)
+    print_output({"validation_result": result, "quality_score": score, "suggestions": fixes}, args.format)
     return 0
 
 
@@ -148,7 +125,7 @@ def main(argv: List[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if getattr(args, "version", False):
-        print(_get_version())
+        print(get_version(PACKAGE_NAME, DEFAULT_VERSION))
         return 0
 
     if not getattr(args, "command", None):
@@ -163,4 +140,3 @@ def main(argv: List[str] | None = None) -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
-

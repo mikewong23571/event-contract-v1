@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Dashboard from '@/components/layout/Dashboard';
+import { LazyBacktestResultsWithFallback } from '@/components/lazy/LazyComponents';
+import { useRenderTimeTracker, useApiTracker } from '@/stores/performanceStore';
 
 type CreateResponse = { backtest_id: string; status: string; created_at: string };
 type GetResponse = { backtest_id: string; status: string; strategy_name: string; results?: { total_trades: number; win_rate: number; total_return: number }; summary?: string };
 
 export default function BacktestingPage() {
+  // Performance monitoring
+  useRenderTimeTracker('BacktestingPage');
+  const { trackApiCall } = useApiTracker();
+  
   const [strategyName, setStrategyName] = useState('baseline-v1');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [startDate, setStartDate] = useState('2024-01-01');
@@ -16,19 +22,25 @@ export default function BacktestingPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<string | null>(null);
+  const [results, setResults] = useState<any>(null);
 
   const createBacktest = async () => {
     setCreating(true);
     setError(null);
     setSummary(null);
+    setResults(null);
+    
     try {
-      const res = await fetch('/api/v1/backtests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ strategy_name: strategyName, start_date: startDate, end_date: endDate, symbol }),
+      const data = await trackApiCall('create-backtest', async () => {
+        const res = await fetch('/api/v1/backtests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ strategy_name: strategyName, start_date: startDate, end_date: endDate, symbol }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: CreateResponse = await res.json();
+      
       setBacktestId(data.backtest_id);
       setStatus(data.status);
     } catch (e: any) {
@@ -40,12 +52,17 @@ export default function BacktestingPage() {
 
   const refreshStatus = async () => {
     if (!backtestId) return;
+    
     try {
-      const res = await fetch(`/api/v1/backtests/${backtestId}`, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: GetResponse = await res.json();
+      const data = await trackApiCall('get-backtest', async () => {
+        const res = await fetch(`/api/v1/backtests/${backtestId}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      });
+      
       setStatus(data.status);
       setSummary(data.summary ?? null);
+      setResults(data.results ?? null);
     } catch (e: any) {
       setError(e.message ?? 'Failed to fetch backtest');
     }

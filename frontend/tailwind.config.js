@@ -133,6 +133,10 @@ module.exports = {
         'spin-slow': 'spin 3s linear infinite',
         'bounce-subtle': 'bounce 2s infinite',
         'wiggle': 'wiggle 1s ease-in-out infinite',
+        'chart-draw': 'chartDraw 1.5s ease-out',
+        'chart-fade-in': 'chartFadeIn 0.8s ease-out',
+        'data-point-pulse': 'dataPointPulse 2s ease-in-out infinite',
+        'progress-fill': 'progressFill 1s ease-out',
       },
       
       keyframes: {
@@ -172,6 +176,22 @@ module.exports = {
           '0%, 100%': { transform: 'rotate(-3deg)' },
           '50%': { transform: 'rotate(3deg)' },
         },
+        chartDraw: {
+          '0%': { strokeDashoffset: '1000' },
+          '100%': { strokeDashoffset: '0' },
+        },
+        chartFadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        dataPointPulse: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.1)', opacity: '0.8' },
+        },
+        progressFill: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
       },
       
       boxShadow: {
@@ -188,6 +208,11 @@ module.exports = {
         'gradient-danger': 'linear-gradient(135deg, #fc466b 0%, #3f5efb 100%)',
         'gradient-warning': 'linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%)',
         'gradient-dark': 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+        'gradient-chart-1': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'gradient-chart-2': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'gradient-chart-3': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'gradient-chart-4': 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        'gradient-chart-5': 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
       },
       
       backdropBlur: {

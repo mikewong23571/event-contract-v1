@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile optimizations */
+@import '../styles/mobile.css';
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -111,15 +114,15 @@
   }
 
   .btn-ghost {
-    @apply btn hover:bg-muted hover:text-muted-foreground;
+    @apply btn hover:bg-secondary hover:text-secondary-foreground;
   }
 
   .btn-outline {
-    @apply btn border border-input bg-background hover:bg-muted hover:text-muted-foreground;
+    @apply btn border border-input bg-background hover:bg-secondary hover:text-secondary-foreground;
   }
   
   .card {
-    @apply rounded-xl border bg-background text-foreground shadow-sm transition-all duration-300;
+    @apply rounded-xl border bg-background text-foreground shadow-card transition-all duration-300;
   }
 
   .card-hover {
@@ -136,6 +139,120 @@
 
   .input-error {
     @apply input border-destructive focus-visible:ring-destructive;
+  }
+
+  /* 数据可视化组件样式 */
+  .chart-container {
+    @apply relative w-full overflow-hidden rounded-lg border bg-background p-6 shadow-lg;
+  }
+
+  .chart-header {
+    @apply mb-4 flex items-center justify-between;
+  }
+
+  .chart-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .chart-subtitle {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .chart-legend {
+    @apply flex flex-wrap items-center gap-4 text-sm;
+  }
+
+  .chart-legend-item {
+    @apply flex items-center gap-2;
+  }
+
+  .chart-legend-color {
+    @apply h-3 w-3 rounded-full;
+  }
+
+  .chart-tooltip {
+    @apply rounded-lg border bg-background p-3 text-foreground shadow-lg;
+  }
+
+  .chart-grid-line {
+    @apply stroke-border;
+  }
+
+  .chart-axis-text {
+    @apply fill-muted-foreground text-xs;
+  }
+
+  .chart-data-line {
+    @apply stroke-2 transition-all duration-300;
+  }
+
+  .chart-data-area {
+    @apply opacity-20 transition-all duration-300;
+  }
+
+  .chart-data-point {
+    @apply transition-all duration-200 hover:scale-110;
+  }
+
+  .chart-loading {
+    @apply flex h-64 items-center justify-center;
+  }
+
+  .chart-error {
+    @apply flex h-64 flex-col items-center justify-center text-center;
+  }
+
+  .chart-no-data {
+    @apply flex h-64 flex-col items-center justify-center text-center text-muted-foreground;
+  }
+
+  /* 实时数据可视化增强样式 */
+  .realtime-chart {
+    @apply chart-container animate-chart-fade-in;
+  }
+
+  .realtime-indicator {
+    @apply absolute top-4 right-4 flex items-center gap-2 text-xs text-success-600;
+  }
+
+  .realtime-dot {
+    @apply h-2 w-2 rounded-full bg-success-500 animate-data-point-pulse;
+  }
+
+  .chart-metric-card {
+    @apply rounded-lg border bg-background p-4 shadow-sm;
+  }
+
+  .chart-metric-value {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .chart-metric-label {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .chart-metric-change {
+    @apply text-sm font-medium;
+  }
+
+  .chart-metric-positive {
+    @apply text-success-600;
+  }
+
+  .chart-metric-negative {
+    @apply text-danger-600;
+  }
+
+  .chart-controls {
+    @apply flex items-center gap-2;
+  }
+
+  .chart-time-selector {
+    @apply rounded-md border bg-background px-3 py-1 text-sm transition-colors hover:bg-muted;
+  }
+
+  .chart-time-selector.active {
+    @apply bg-primary text-primary-foreground;
   }
 
   .badge {

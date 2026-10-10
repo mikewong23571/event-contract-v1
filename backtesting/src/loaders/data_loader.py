@@ -26,6 +26,7 @@ class DataSourceConfig(BaseModel):
     connection_string: Optional[str] = None
     api_endpoint: Optional[str] = None
     api_key: Optional[str] = None
+    api_secret: Optional[str] = None  # For Binance API (optional)
     symbols: List[str] = Field(default_factory=list)
     start_date: datetime
     end_date: datetime
@@ -41,6 +42,29 @@ class DataSourceConfig(BaseModel):
     def validate_end_date(cls, v, values):
         if 'start_date' in values and v <= values['start_date']:
             raise ValueError('end_date must be after start_date')
+        return v
+    
+    @validator('api_endpoint')
+    def validate_api_endpoint(cls, v, values):
+        if values.get('source_type') == 'api' and not v:
+            raise ValueError('api_endpoint is required when source_type is "api"')
+        return v
+    
+    @validator('symbols')
+    def validate_symbols_for_binance(cls, v, values):
+        api_endpoint = values.get('api_endpoint', '')
+        if values.get('source_type') == 'api' and 'binance' in api_endpoint.lower() and not v:
+            raise ValueError('symbols must be specified for Binance API data source')
+        return v
+    
+    @validator('timeframe')
+    def validate_timeframe_for_binance(cls, v, values):
+        api_endpoint = values.get('api_endpoint', '')
+        if values.get('source_type') == 'api' and 'binance' in api_endpoint.lower():
+            # Binance supported timeframes
+            binance_timeframes = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
+            if v not in binance_timeframes:
+                raise ValueError(f'timeframe "{v}" not supported by Binance. Supported: {", ".join(binance_timeframes)}')
         return v
 
 
@@ -248,9 +272,55 @@ class HistoricalDataLoader:
 
     async def _load_from_api(self) -> List[HistoricalDataPoint]:
         """Load data from external API."""
-        # Placeholder for API implementation
-        # In a real implementation, this would fetch from Binance/other exchanges
-        raise NotImplementedError("API loading not implemented yet")
+        if not self.config.api_endpoint:
+            raise ValueError("api_endpoint required for API data source")
+        
+        # Support for Binance API
+        if "binance" in self.config.api_endpoint.lower():
+            return await self._load_from_binance()
+        else:
+            raise NotImplementedError(f"API endpoint not supported: {self.config.api_endpoint}")
+    
+    async def _load_from_binance(self) -> List[HistoricalDataPoint]:
+        """Load data from Binance API."""
+        from .binance_client import BinanceDataClient
+        
+        # Initialize Binance client
+        binance_client = BinanceDataClient(
+            api_key=self.config.api_key,
+            api_secret=getattr(self.config, 'api_secret', None)
+        )
+        
+        all_data_points = []
+        
+        # If no symbols specified, raise error (Binance requires specific symbols)
+        if not self.config.symbols:
+            raise ValueError("symbols must be specified for Binance API data source")
+        
+        # Fetch data for each symbol
+        for symbol in self.config.symbols:
+            try:
+                # Validate symbol exists on Binance
+                if not binance_client.validate_symbol(symbol):
+                    print(f"Warning: Symbol {symbol} not found on Binance, skipping...")
+                    continue
+                
+                # Fetch historical data
+                symbol_data = await binance_client.fetch_historical_klines(
+                    symbol=symbol,
+                    timeframe=self.config.timeframe,
+                    start_date=self.config.start_date,
+                    end_date=self.config.end_date
+                )
+                
+                all_data_points.extend(symbol_data)
+                print(f"Loaded {len(symbol_data)} data points for {symbol}")
+                
+            except Exception as e:
+                print(f"Error loading data for {symbol}: {str(e)}")
+                continue
+        
+        return all_data_points
 
     def _organize_data_by_symbol(self, data_points: List[HistoricalDataPoint]) -> None:
         """Organize data points by symbol in cache."""
